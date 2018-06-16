@@ -58,6 +58,10 @@ echo -e $green "5- Accounts Hack"
 echo ""
 echo -e $green "6- creat Backup"
 echo ""
+echo -e $green "7- injection payload"
+echo ""
+echo -e $green "8- other"
+echo ""
 echo -e $green "00- back" 
 echo "" 
 echo "" 
@@ -521,6 +525,117 @@ if [ $Gnuroot = 00 ]
 then
 clear
 bash Hk-Tools.sh
+fi
+if [ $Gnuroot = 7 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) --------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "PAYLOAD"
+echo ""
+echo -e $green "1- Venom"
+echo ""
+echo -e $green "2- PAYMAX"
+echo ""
+echo -e $green "3- txtool"
+echo ""
+echo -e $green "00- Back"
+echo ""
+read payload2
+if [ $payload2 = 1 ]
+then
+clear
+echo -e $red
+figlet "venom"
+cd ~
+git clone https://github.com/r00t-3xp10it/venom 
+bash Hk-Tools.sh
+fi
+if [ $payload2 = 2 ]
+then
+clear
+echo -e $red
+figlet "PAYMAX"
+cd ~
+git clone https://github.com/Matrix07ksa/PAYMAX
+bash Hk-Tools.sh
+fi
+if [ $payload2 = 3 ]
+then
+clear
+echo -e $red
+figlet "Txtool"
+cd ~
+git clone https://github.com/kuburan/txtool
+bash Hk-Tools.sh
+fi
+if [ $payload2 = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $Gnuroot = 8 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Other"
+echo ""
+echo -e $green "1- spammer-Grab"
+echo ""
+echo -e $green "2- Ngrok"
+echo ""
+echo -e $green "3- change style"
+echo ""
+echo -e $green "00- Back "
+echo ""
+read other
+if [ $other = 1 ]
+then
+clear
+echo -e $red
+figlet "spammer-Grab"
+cd ~
+git clone https://github.com/p4kl0nc4t/Spammer-Grab
+bash Hk-Tools.sh
+fi
+if [ $other = 2 ]
+then
+clear
+echo -e $red
+figlet "Ngrok"
+cd ~
+git clone https://github.com/themastersunil/ngrok
+bash Hk-Tools.sh
+fi
+if [ $other = 3 ]
+then
+clear
+echo -e $red
+figlet "change stayle"
+cd ~
+git clone https://github.com/profionaldhim/etc/blob/master/bash.bashrc
+cp bash.bashrc etc
+bash Hk-Tools.sh
+fi
+if [ $other = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
 fi
 fi
 if [ $name = 2 ]
@@ -1336,6 +1451,65 @@ if [ $termux = 00 ]
 then
 clear
 bash Hk-Tools.sh
+fi
+if [ $termux = 8 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Other"
+echo ""
+echo -e $green "1- spammer-Grab"
+echo ""
+echo -e $green "2- Ngrok"
+echo ""
+echo -e $green "3- change style"
+echo ""
+echo -e $green "00- Back "
+echo ""
+read other2
+if [ $other2 = 1 ]
+then
+clear
+echo -e $red
+figlet "spammer-Grab"
+cd ~
+git clone https://github.com/p4kl0nc4t/Spammer-Grab
+bash Hk-Tools.sh
+fi
+if [ $other2 = 2 ]
+then
+clear
+echo -e $red
+figlet "Ngrok"
+cd ~
+git clone https://github.com/themastersunil/ngrok
+bash Hk-Tools.sh
+fi
+if [ $other2 = 3 ]
+then
+clear
+echo -e $red
+figlet "change stayle"
+cd ~
+git clone https://github.com/profionaldhim/etc/blob/master/bash.bashrc
+cp bash.bashrc /cd ..
+cp bash.bashrc usr/etc
+cd usr/etc
+rm -rif motd
+bash Hk-Tools.sh
+fi
+if [ $other2 = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
 fi
 fi
 if [ $name = 3 ]
