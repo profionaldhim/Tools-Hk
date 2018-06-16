@@ -13,3 +13,8 @@ pkg install git -y
 pkg install curl -y
 pkg install wgt -y
 gem install figlet
+apt install lolcat -y
+apt install figlet -y
+apt install python -y
+apt install python2 -y
+
