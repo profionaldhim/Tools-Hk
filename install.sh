@@ -5,6 +5,7 @@ pkg install ruby -y
 pkg install gem -y
 pkg install toilet -y
 pkg install lolcat -y
+gem install lolcat
 pip2 install requests
 pkg install python -y
 pkg install python2 -y
