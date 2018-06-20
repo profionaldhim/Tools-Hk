@@ -2223,7 +2223,7 @@ then
 clear
 figlet "sniper-h "
 cd ~
-cd sniper-h
+cd Tools-Hl/sniper-h
 echo -e $yellow "Do you have list Hash ? please insert y/n"
 read pathlist
 if [ $pathlist = "y" ]
@@ -2337,17 +2337,13 @@ fi
 if [ $usage = 7 ]
 then
 clear
-toilet -f term -F border --gay "fb : 
-www.fb.com/profionaldhim"
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
 echo -e $red
 figlet -f slant "HK-Tools"
-echo -e 
-$green"-----------------------------------"
+echo -e $green"-----------------------------------"
 toilet "YEMEN" | lolcat
-echo -e $green"--------------$yellow(2 in 
-1) ---------------"
-echo -e $yellow "By =====> $red HACKER / 
-MOHAMMED "
+echo -e $green"--------------$yellow(2 in 1) ---------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
 echo ''
 echo -e $red   "Scan port"
 echo ""
