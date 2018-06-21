@@ -2008,6 +2008,13 @@ then
 clear
 figlet "Creat wordlist"
 echo ""
+echo -e $green "if you using now Gnuroot insert : y else : n  ? "
+echo -e $red
+read use
+if [ $use = "y" ]
+then
+clear
+figlet "Creat wordlist"
 echo -e $green "what is the username ? "
 echo -e $red
 read user
@@ -2034,7 +2041,14 @@ read num
 echo ""
 toilet "Loading" | lolcat
 crunch $much $much $phone -t $num -o $pathsave$namelist
+else
+cd ~
+cd Tools-Hk/Crunch-Cracker
+chmod +x crunchcracker.sh
+sudo
+bash crunchcracker.sh
 bash Hk-Tools.sh
+fi
 fi
 if [ $accountHk = 2 ]
 then
@@ -2275,6 +2289,7 @@ then
 clear
 bash Hk-Tools.sh
 fi
+fi
 if [ $usage = 6 ]
 then
 clear
@@ -2328,12 +2343,6 @@ clear
 bash Hk-Tools.sh
 fi
 fi
-if [ $usage = 00 ]
-then
-clear
-bash Hk-Tools.sh
-fi
-fi
 if [ $usage = 7 ]
 then
 clear
@@ -2382,6 +2391,11 @@ then
 clear
 bash Hk-Tools.sh
 fi
+fi
+if [ $usage = 00 ]
+then
+clear
+bash Hk-Tools.sh
 fi
 fi
 if [ $name = 4 ]
