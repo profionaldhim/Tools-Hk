@@ -1563,9 +1563,8 @@ cd ~
 apt upgrade
 pkg install git -y
 pkg install ncurses-utils -y
-git clone https://github.com/st42/termux-sudo
-ls
-cd termux-sudo
+git clone https://github.com/profionaldhim/Termux-Sudo
+cd Termux-Sudo
 ls
 cat sudo > /data/data/com.termux/files/usr/bin/sudo
 chmod 700 /data/data/com.termux/files/usr/bin/sudo
@@ -2008,13 +2007,6 @@ then
 clear
 figlet "Creat wordlist"
 echo ""
-echo -e $green "if you using now Gnuroot insert : y else : n  ? "
-echo -e $red
-read use
-if [ $use = "y" ]
-then
-clear
-figlet "Creat wordlist"
 echo -e $green "what is the username ? "
 echo -e $red
 read user
@@ -2041,14 +2033,7 @@ read num
 echo ""
 toilet "Loading" | lolcat
 crunch $much $much $phone -t $num -o $pathsave$namelist
-else
-cd ~
-cd Tools-Hk/Crunch-Cracker
-chmod +x crunchcracker.sh
-sudo
-bash crunchcracker.sh
 bash Hk-Tools.sh
-fi
 fi
 if [ $accountHk = 2 ]
 then
@@ -2191,20 +2176,24 @@ read whk
 if [ $whk = 1 ]
 then
 clear
+echo -e $yellow "please insert web url"
+read wehk
 cd ~
 cd sqlmap
-echo -e $yellow "please insert web url"
-read re
-python2 sqlmap.py -u $re --dbs
+python sqlmap.py -u $read --dbs
 echo -e $yellow "please insert database"
-read data
-python2 sqlmap.py -u $re -D $data --tables 
+read datat
+python sqlmap.py -u $read --dbs
 echo -e $yellow "please insert table"
 read table
-python2 sqlmap.py -u $re -D $data -T $table --columns
+python sqlmap.py -u $read -D $data --tables
 echo -e $yellow "please insert columns"
 read columns
-python2 sqlmap.py -u $re -D $data -T $table -C $columns --dump
+python sqlmap.py -u $read -D $data -T $tables columns
+echo -e $yellow "please insert data columns"
+read dump
+python sqlmap.py -u $read -D $data -T $tables -C $columns --dump
+
 echo -e $yellow "Do you want define type hash insert y/n "
 read typehash
 if [ $typehash = "y" ]
@@ -2285,7 +2274,6 @@ then
 clear
 bash Hk-Tools.sh
 fi
-fi
 if [ $usage = 6 ]
 then
 clear
@@ -2339,6 +2327,12 @@ clear
 bash Hk-Tools.sh
 fi
 fi
+if [ $usage = 00 ]
+then
+clear
+bash Hk-Tools.sh
+fi
+fi
 if [ $usage = 7 ]
 then
 clear
@@ -2387,11 +2381,6 @@ then
 clear
 bash Hk-Tools.sh
 fi
-fi
-if [ $usage = 00 ]
-then
-clear
-bash Hk-Tools.sh
 fi
 fi
 if [ $name = 4 ]
