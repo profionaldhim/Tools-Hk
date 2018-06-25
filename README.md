@@ -2,7 +2,7 @@
  هذه الاداة تشمل معظم الادوات المهمةبتطبيقي gnuroot &amp; Termux
  first
  chmod +x install.sh
- chmod +x Hk-Tools.sh
+ chmod +x Tools-Hk.sh
  second
  bash install.sh
- bash Hk-Tools.sh
+ bash Tools-H.sh
