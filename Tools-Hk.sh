@@ -33,7 +33,9 @@ echo -e $green   "2- Tools-Termux"
 echo ""
 echo -e $green   "3- Usage"
 echo ""
-echo -e $green   "4- About me"
+echo -e $green   "4- Repair Termux & Gnuroot"
+echo ""
+echo -e $green   "5- About me"
 echo ""
 echo -e $green   "0- EXIT |-|"
 echo "" 
@@ -1686,6 +1688,8 @@ echo -e $green "3- change style"
 echo ""
 echo -e $green "4- root - sudo"
 echo ""
+echo -e $green "5- kali Nethunter"
+echo ""
 echo -e $green "00- Back "
 echo ""
 read other2
@@ -1736,6 +1740,38 @@ cat sudo > /data/data/com.termux/files/usr/bin/sudo
 chmod 700 /data/data/com.termux/files/usr/bin/sudo
 sudo
 bash Tools-Hk.sh
+fi
+if [ $other2 = 5 ]
+then
+clear
+echo -e $red
+figlet "Kali Nethunter"
+apt update && apt upgrade -y
+
+cd $HOME
+
+pkg install curl ruby -y
+
+curl -LO https://raw.githubusercontent.com/Hax4us/Nethunter-In-Termux/master/kalinethunter
+
+chmod +x kalinethunter
+
+./kalinethunter
+
+chmod +x finaltouchup.sh
+
+echo -e $yellow "please insert name your pc android ex: arm,arm64 "
+read pc
+
+mv finaltouchup.sh kali-$pc
+
+startkali
+
+bash finaltouchup.sh
+
+apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
+
+apt update && apt upgrade -y
 fi
 if [ $other2 = 00 ]
 then
@@ -2635,6 +2671,227 @@ clear
 toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
 echo -e $red
 figlet -f slant "Tools-Hk" 
+echo -e $green '#####################################'
+echo -e $green '#                                   #'
+echo -e $green '#    Name:-   Tools-Hk v1.0.0       #'
+echo -e $green '#    Author:- Mohammed Info         #'
+echo -e $green '#    From:-   Yemen                 #'
+echo -e $green '#    Fb:www.fb.com/profionaldhim    #'
+echo -e $green '#                                   #'
+echo -e $green '#####################################'
+echo -e $red
+echo -e $green"-----------------------------------"
+echo -e $green"--------------$yellow(2 in 1) --------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "Repair Termux && Gnuroot"
+echo ""
+echo -e $green     "1- update && upgrade"
+echo ""
+echo -e $green     "2- repair source.list"
+echo ""
+echo -e $green     "3- install language programming"
+echo ""
+echo -e $green     "4- repair dpkg"
+echo ""
+echo -e $green     "5- repair error metasploit to connect database"
+echo ""
+echo -e $green     "6- repair Tmux-Bunch-arm"
+echo ""
+echo ""
+
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+read repair
+if [ $repair = 1 ]
+then
+clear
+figlet "update"
+echo ""
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $repair = 2 ]
+then
+clear
+figlet "repair source"
+echo ""
+echo -e $green "repair source.list for Termux-arm"
+echo ""
+
+apt update && apt upgrade -y
+
+pkg install wget
+
+wget https://raw.githubusercontent.com/Hax4us/Hax4us.github.io/master/sources-arm.list.txt
+mv sources-arm.list.txt sources.list
+mv sources.list $PREFIX/etc/apt
+apt update && apt upgrade -y
+fi
+if [ $repair = 3 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f slant "Tools-Hk" 
+echo -e $green '#####################################'
+echo -e $green '#                                   #'
+echo -e $green '#    Name:-   Tools-Hk v1.0.0       #'
+echo -e $green '#    Author:- Mohammed Info         #'
+echo -e $green '#    From:-   Yemen                 #'
+echo -e $green '#    Fb:www.fb.com/profionaldhim    #'
+echo -e $green '#                                   #'
+echo -e $green '#####################################'
+echo -e $red
+echo -e $green"-----------------------------------"
+echo -e $green"--------------$yellow(2 in 1) --------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "install L.Programming"
+echo ""
+echo -e $green     "1- install python"
+echo ""
+echo -e $green     "2- install python2"
+echo ""
+echo -e $green     "3- install python3"
+echo ""
+echo -e $green     "4- install python-pip & python2-pip"
+echo ""
+echo -e $green     "5- install ruby"
+echo ""
+echo -e $green     "6- install Php"
+echo ""
+echo -e $green     "7- install java"
+echo ""
+echo ""
+
+echo -e $green     "00- BACK"
+echo ""
+read language
+if [ $language = 1 ]
+then
+clear
+figlet "install py"
+echo ""
+apt-get install python -y
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 2 ]
+then
+clear
+figlet "install py2"
+echo ""
+apt-get install python2 -y
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 3 ]
+then
+clear
+figlet "install py3"
+echo ""
+apt-get install python3 -y
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 4 ]
+then
+clear
+figlet "install pip & pip2"
+echo ""
+apt-get install python-pip -y
+apt-get install python2-pip -y
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 5 ]
+then
+clear
+figlet "install ruby"
+echo ""
+apt-get install ruby
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 6 ]
+then
+clear
+figlet "Php"
+echo ""
+apt-get install php
+apt-get update -y
+apt-get upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 7 ]
+then
+clear
+figlet "install java"
+echo ""
+apt-get update -y
+apt-get upgrade -y
+apt-get install dirmngr gnupg-curl -y
+apt-key adv --keyserver pool.sks-keyservers.net --recv 9D6D488416B493F0
+apt update
+apt-get install openjdk-9-jdk-headless
+apt update && apt upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $language = 00 ]
+then
+clear
+bash Tools-Hk.sh
+fi
+fi
+if [ $repair = 4 ]
+then
+clear
+figlet "repair dpkg"
+bash Tools-Hk.sh
+fi
+if [ $repair = 5 ]
+then
+clear
+figlet "repair metasploit"
+mkdir -p $PREFIX/var/lib/postgresql
+initdb $PREFIX/var/lib/postgresql
+pg_ctl -D $PREFIX/var/lib/postgresql start
+
+bash Tools-Hk.sh
+fi
+if [ $repair = 6 ]
+then
+clear
+figlet "repair Tmux-Bunch"
+apt-get update -y
+apt-get upgrade -y
+apt-get install dirmngr gnupg-curl -y
+apt-key adv --keyserver pool.sks-keyservers.net --recv 9D6D488416B493F0
+apt update
+apt install openjdk-9-jdk-headless
+apt update && apt upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $repair = 00 ]
+then
+clear
+bash Tools-Hk.sh
+fi
+fi
+if [ $name = 5 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f slant "Tools-Hk"
 echo -e $green '#####################################'
 echo -e $green '#                                   #'
 echo -e $green '#    Name:-   Tools-Hk v1.0.0       #'
