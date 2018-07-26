@@ -1763,7 +1763,7 @@ chmod +x finaltouchup.sh
 echo -e $yellow "please insert name your pc android ex: arm,arm64 "
 read pc
 
-mv finaltouchup.sh kali-$pc
+mv finaltouchup.sh kali-$pc/root
 
 startkali
 
