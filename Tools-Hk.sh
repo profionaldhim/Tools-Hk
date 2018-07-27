@@ -582,9 +582,7 @@ figlet "backup"
 cd ~
 apt update && apt upgrade
 cd /data/data/com.gnuroot.debian/
-tar -cvzf /sdcard/buckup-gnuroot.tgz 
-app_HOME cache databases debian files lib 
-support shared_prefs
+tar -cvzf /sdcard/buckup-gnuroot.tgz app_HOME cache databases debian files lib support shared_prefs
 fi
 if [ $backup_recovery = 2 ]
 then
@@ -1745,7 +1743,36 @@ if [ $other2 = 5 ]
 then
 clear
 echo -e $red
-figlet "Kali Nethunter"
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f slant "Tools-Hk" 
+echo -e $green '#####################################'
+echo -e $green '#                                   #'
+echo -e $green '#    Name:-   Tools-Hk v1.0.0       #'
+echo -e $green '#    Author:- Mohammed Info         #'
+echo -e $green '#    From:-   Yemen                 #'
+echo -e $green '#    Fb:www.fb.com/profionaldhim    #'
+echo -e $green '#                                   #'
+echo -e $green '#####################################'
+echo -e $red
+echo -e $green"-----------------------------------"
+echo -e $green"--------------$yellow(2 in 1) --------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   " install kali Nethunter"
+echo ""
+echo -e $green     "1- no root"
+echo -e $green     "2- root"
+echo ""
+echo -e $green     "00- BACK"
+echo ""
+echo ""
+read nethunter
+if [ $nethunter = 1 ]
+then
+clear
+figlet "Nethunter"
+echo ""
 apt update && apt upgrade -y
 
 cd $HOME
@@ -1760,10 +1787,7 @@ chmod +x kalinethunter
 
 chmod +x finaltouchup.sh
 
-echo -e $yellow "please insert name your pc android ex: arm,arm64 "
-read pc
-
-mv finaltouchup.sh kali-$pc/root
+mv finaltouchup.sh kali-armhf/root
 
 startkali
 
@@ -1772,6 +1796,43 @@ bash finaltouchup.sh
 apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
 
 apt update && apt upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $nethunter = 2 ]
+then
+clear
+figlet "Nethunter"
+echo ""
+apt update && apt upgrade -y
+
+cd $HOME
+sudo su
+pkg install curl ruby -y
+
+curl -LO https://raw.githubusercontent.com/Hax4us/Nethunter-In-Termux/master/kalinethunter
+
+chmod +x kalinethunter
+
+./kalinethunter
+cd /data/data/com.termux/files/home/.suroot
+chmod +x finaltouchup.sh
+
+mv finaltouchup.sh kali-armhf/root
+
+startkali
+
+bash finaltouchup.sh
+
+apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys 7D8D0BF6
+
+apt update && apt upgrade -y
+bash Tools-Hk.sh
+fi
+if [ $nethunter = 00 ]
+then
+clear
+bash Tools-Hk.sh
+fi
 fi
 if [ $other2 = 00 ]
 then
