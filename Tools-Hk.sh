@@ -711,7 +711,14 @@ clear
 echo -e $red
 figlet "spammer-Grab"
 cd ~
-git clone https://github.com/p4kl0nc4t/Spammer-Grab
+git clone https://github.com/profionaldhim/Spammer-Grab
+cd Spammer-Grab 
+mv Spammer-Grab.zip $HOME
+rm -rif Spammer-Grab
+unzip Spammer-Grab.zip
+cd Spammer-Grab
+chmod +x spammer.py 
+
 bash Tools-Hk.sh
 fi
 if [ $other = 2 ]
@@ -1697,7 +1704,13 @@ clear
 echo -e $red
 figlet "spammer-Grab"
 cd ~
-git clone https://github.com/p4kl0nc4t/Spammer-Grab
+git clone https://github.com/profionaldhim/Spammer-Grab
+cd Spammer-Grab
+mv Spammer-Grab.zip $HOME
+rm -rif Spammer-Grab
+unzip Spammer-Grab.zip
+cd Spammer-Grab
+chmod +x spammer.py
 bash Tools-Hk.sh
 fi
 if [ $other2 = 2 ]
