@@ -21,5 +21,5 @@ apt install figlet -y
 apt install python -y
 apt install python2 -y
 
-chmod +x Hk-Tools.sh
+chmod +x Tools-Hk.sh
 
