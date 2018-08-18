@@ -711,10 +711,11 @@ clear
 echo -e $red
 figlet "spammer-Grab"
 cd ~
+cd $Home
 git clone https://github.com/profionaldhim/Spammer-Grab
 cd Spammer-Grab 
 mv Spammer-Grab.zip $HOME
-cd ~
+cd $Home
 rm -rif Spammer-Grab
 unzip Spammer-Grab.zip
 cd Spammer-Grab
@@ -1693,9 +1694,11 @@ clear
 echo -e $red
 figlet "spammer-Grab"
 cd ~
+cd $Home
 git clone https://github.com/profionaldhim/Spammer-Grab
 cd Spammer-Grab
 mv Spammer-Grab.zip $HOME
+cd $Home
 rm -rif Spammer-Grab
 unzip Spammer-Grab.zip
 cd Spammer-Grab
