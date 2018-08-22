@@ -1106,15 +1106,17 @@ if [ $Bef = 1 ]
 then
 clear
 apt update && apt upgrade -y
-pkg install wget
-wget 
-https://raw.githubusercontent.com/Hax4us/Hax4us.github.io/master/sources-aarch64.list.txt
-mv sources-aarch64.list.txt sources.list
-mv sources.list $PREFIX/etc/apt
-wget https://xeffyr.github.io/termux-x-repository/pubkey.gpg
+pkg install git
+cd $Home
+git clone https://github.com/profionaldhim/sources-list-termux
+mv sources-list-termux/sources.list /data/data/com.termux/files/usr/etc/apt
+#wget https://raw.githubusercontent.com/Hax4us/Hax4us.github.io/master/sources-aarch64.list.txt
+#mv sources-aarch64.list.txt sources.list
+#mv sources.list $PREFIX/etc/apt
+#wget https://xeffyr.github.io/termux-x-repository/pubkey.gpg
 apt update && apt upgrade -y
 apt-get install gnupg gnupg2 -y
-apt-key add pubkey.gpg
+#apt-key add pubkey.gpg
 apt-get install beef-xss -y
 beef
 fi
@@ -1122,14 +1124,18 @@ if [ $Bef = 2 ]
 then
 clear
 apt update && apt upgrade -y
-pkg install wget
-wget https://raw.githubusercontent.com/Hax4us/Hax4us.github.io/master/sources-arm.list.txt
-mv sources-arm.list.txt sources.list
-mv sources.list $PREFIX/etc/apt
-wget https://xeffyr.github.io/termux-x-repository/pubkey.gpg
-apt update && apt upgrade -y
+pkg install git
+#wget https://raw.githubusercontent.com/Hax4us/Hax4us.github.io/master/sources-arm.list.txt
+#mv sources-arm.list.txt sources.list
+#mv sources.list $PREFIX/etc/apt
+#wget https://xeffyr.github.io/termux-x-repository/pubkey.gpg
+
+#apt update && apt upgrade -y
+cd $Home
+git clone https://github.com/profionaldhim/sources-list-termux
+mv sources-list-termux/sources.list /data/data/com.termux/files/usr/etc/apt
 apt-get install gnupg gnupg2 -y
-apt-key add pubkey.gpg
+#apt-key add pubkey.gpg
 apt-get install beef-xss -y
 beef
 fi
