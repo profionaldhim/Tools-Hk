@@ -1570,8 +1570,7 @@ cd ~
 apt update && apt upgrade
 termux-setup-storage
 cd /data/data/com.termux/files
-tar -cvzf /sdcard/buckup-termux.tgz home 
-usr
+tar -cvzf /sdcard/buckup-termux.tgz home usr
 bash Tools-Hk.sh
 fi
 if [ $backup_recovery2 = 2 ]
