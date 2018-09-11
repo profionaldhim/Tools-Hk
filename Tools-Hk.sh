@@ -1456,7 +1456,7 @@ clear
 echo -e $red
 figlet "admin-panel-finder"
 cd ~
-git clone https://github.com/bdblackhat/admin-panel
+git clone https://github.com/bdblackhat/admin-panel-finder
 bash Tools-Hk.sh
 fi
 if [ $ter_website = 14 ]
