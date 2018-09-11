@@ -321,7 +321,7 @@ clear
 echo -e $red
 figlet "HT-WPS-Breaker"
 cd ~
-https://github.com/SilentGhostX/HT-WPS-Breaker
+git clone https://github.com/SilentGhostX/HT-WPS-Breaker
 bash Tools-Hk.sh
 fi
 if [ $wifi = 4 ]
@@ -1413,7 +1413,7 @@ clear
 echo -e $red
 figlet "IPlocator"
 cd ~
-git clonehttps://github.com/AndreasBriese/ipLocator
+git clone https://github.com/AndreasBriese/ipLocator
 bash Tools-Hk.sh
 fi
 if [ $ter_website = 9 ]
@@ -1429,7 +1429,7 @@ then
 clear
 echo -e $red
 figlet "hash-identifier"
-git clonehttps://github.com/Miserlou/Hash-Identifier
+git clone https://github.com/Miserlou/Hash-Identifier
 bash Tools-Hk.sh
 fi
 if [ $ter_website = 11 ]
@@ -4789,6 +4789,13 @@ echo -e $yellow "By =====> $red HACKER / MOHAMMED "
 echo ''
 echo -e $red   "Start Encrypt The Tools"
 echo ""
+echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+echo ""
+echo -e $green "insert path and name Your name tool "
+echo ""
+echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+
+read nametool
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
 echo -e $green "insert path and name Your tool ex: Desktop/Tools-Hk/Tools-Hk.sh"
@@ -4803,7 +4810,7 @@ echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
 read tompath
-bash-obfuscate $frompath -o $topath
+bash-obfuscate $frompath/$namtool -o $topath/$nametool
 bash Tools-Hk.sh
 fi
 if [ $encrypt = 2 ]
