@@ -61,7 +61,6 @@ sleep 0
 echo -e $green   "0- EXIT |-|"
 echo "" 
 echo "" 
-
 sleep 0
 echo -e $green "Enter The Number:" 
 echo -e $red
@@ -294,6 +293,8 @@ echo -e $green '{ -5- } ===> ' $white " Routersploit"
 echo ""
 echo -e $green '{ -6- } ===> ' $red " airgeddon"
 echo ""
+echo -e $green '{ -7- } ===> ' $red " crunch(list password)"
+echo ""
 echo -e $green "00- Back"
 echo ""
 read wifi
@@ -349,6 +350,15 @@ echo -e $red
 figlet "airgeddon"
 cd ~
 git clone https://github.com/v1s1t0r1sh3r3/airgeddon
+bash Tools-Hk.sh
+fi
+if [ $wifi = 7 ]
+then
+clear
+echo -e $red
+figlet " To creat wordlist"
+cd ~
+apt-get install crunch -y
 bash Tools-Hk.sh
 fi
 if [ $wifi = 00 ]
@@ -1030,7 +1040,7 @@ clear
 echo -e $red
 figlet "Routersploit"
 cd ~
-git clonehttps://github.com/reverse-shell/routersploit
+git clone https://github.com/reverse-shell/routersploit
 bash Tools-Hk.sh
 fi
 if [ $ter_sniffing = 3 ]
@@ -1361,7 +1371,7 @@ clear
 echo -e $red
 figlet "webscan"
 cd ~
-git clonehttps://github.com/kost/docker-webscan
+git clone https://github.com/kost/docker-webscan
 bash Tools-Hk.sh
 fi
 if [ $ter_website = 3 ]
@@ -1970,6 +1980,9 @@ echo ""
 echo -e $green '{ -5- } ===> ' $white " Ddos attack"
 echo ""
 echo -e $green '{ -6- } ===> ' $red " scan port"
+echo ""
+echo -e $green '{ -7- } ===> ' $white " wifi"
+echo ""
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -2750,7 +2763,7 @@ if [ $hydra = 3 ]
 then
 clear
 figlet "Gmail Hack"
-echo -e $yellow "please insert vactime email .."
+echo -e $yellow "please insert victim email .."
 echo -e $red
 read hayd
 echo -e $yellow "please insert path wordlist..."
@@ -2837,19 +2850,19 @@ echo -e $yellow "please insert web url"
 read wehk
 cd ~
 cd sqlmap
-python sqlmap.py -u $read --dbs
+python2 sqlmap.py -u $read --dbs
 echo -e $yellow "please insert database"
 read datat
-python sqlmap.py -u $read --dbs
+python2 sqlmap.py -u $read --dbs
 echo -e $yellow "please insert table"
 read table
-python sqlmap.py -u $read -D $data --tables
+python2 sqlmap.py -u $read -D $data --tables
 echo -e $yellow "please insert columns"
 read columns
-python sqlmap.py -u $read -D $data -T $tables columns
+python2 sqlmap.py -u $read -D $data -T $tables columns
 echo -e $yellow "please insert data columns"
 read dump
-python sqlmap.py -u $read -D $data -T $tables -C $columns --dump
+python2 sqlmap.py -u $read -D $data -T $tables -C $columns --dump
 
 echo -e $yellow "Do you want define type hash insert y/n "
 read typehash
@@ -2879,7 +2892,7 @@ then
 clear
 figlet "sniper-h "
 cd ~
-cd Tools-Hl/sniper-h
+cd Tools-Hk/sniper-h
 echo -e $yellow "Do you have list Hash ? please insert y/n"
 read pathlist
 if [ $pathlist = "y" ]
@@ -3058,6 +3071,73 @@ clear
 bash Tools-Hk.sh
 fi
 fi
+if [ $kali = 7 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f smmono9 "Tools-Hk" 
+echo -e $white '#####################################'
+echo -e $red '#                                   #'
+echo -e $green '#    Name:- Tools-Hk V2.2.8         #'
+echo -e $red '#    Author:- Mohammed Info         #'
+echo -e $green '#    From:-   Yemen                 #'
+echo -e $white '#    github:  profionaldhim         #'
+echo -e $green '#    whatsapp :- +967733014747      #'
+echo -e $white '#####################################'
+
+echo -e $red
+echo -e $green"-----------------------------------"
+echo -e $green"--------------$yellow(3 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "cread word list by crunch"
+echo ""
+echo -e $green '{ -1- } ===> ' $white " creat (list password)"
+echo ""
+echo "" 
+echo -e $green     "00- BACK"
+read start
+if [ $start = 1 ]
+then
+
+figlet "Creat wordlist"
+echo ""
+echo -e $green "what is the first: char or number ? ex: 12 "
+echo -e $red
+read user
+echo ""
+echo -e $green " second:  insert  any number .. ex: 123456 "
+echo -e $red
+read phone
+echo ""
+echo -e $green "name list ex :pass.txt "
+echo -e $red
+read namelist
+echo ""
+echo -e $green " sum little first  + second = ? example : mohammed773532224 = first = 8 second =9 then 8+9=17 "
+echo -e $red
+read much
+echo ""
+echo -e $green "please insert path save ex:/sdcard/"
+echo -e $red
+read pathsave
+echo ""
+echo -e $green "insert your pass hack ex:first@@@@@"
+echo -e $red
+read num
+echo ""
+toilet "Loading"
+crunch $much $much $phone -t $num -o $pathsave$namelist
+bash Tools-Hk.sh
+
+fi
+if [ $start = 00 ]
+then
+clear
+bash Tools-Hk.sh
+fi
+fi
 if [ $kali = 00 ]
 then
 clear
@@ -3084,7 +3164,7 @@ echo -e $green"-----------------------------------"
 echo -e $green"--------------$yellow(3 in 1) ----------------"
 echo -e $yellow "By =====> $red HACKER / MOHAMMED "
 echo ''
-echo -e $red   "use automatic not command"
+echo -e $red   "use automatic Tools"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " injection payloads"
 echo ""
@@ -3099,6 +3179,8 @@ echo ""
 echo -e $green '{ -6- } ===> ' $red " dos attack"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " scan port"
+echo ""
+echo -e $green '{ -8- } ===> ' $red " crunch(list password)"
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -4221,6 +4303,74 @@ clear
 bash Tools-Hk.sh
 fi
 fi
+if [ $usage = 8 ]
+then
+clear
+toilet -f term -F border --gay "fb : www.fb.com/profionaldhim "
+echo -e $red
+figlet -f smmono9 "Tools-Hk" 
+echo -e $white '#####################################'
+echo -e $red '#                                   #'
+echo -e $green '#    Name:- Tools-Hk V2.2.8         #'
+echo -e $red '#    Author:- Mohammed Info         #'
+echo -e $green '#    From:-   Yemen                 #'
+echo -e $white '#    github:  profionaldhim         #'
+echo -e $green '#    whatsapp :- +967733014747      #'
+echo -e $white '#####################################'
+
+echo -e $red
+echo -e $green"-----------------------------------"
+echo -e $green"--------------$yellow(3 in 1) ----------------"
+echo -e $yellow "By =====> $red HACKER / MOHAMMED "
+echo ''
+echo -e $red   "cread word list by crunch"
+echo ""
+echo -e $green '{ -1- } ===> ' $white " creat (list password)"
+echo ""
+echo "" 
+echo -e $green     "00- BACK"
+read start
+if [ $start = 1 ]
+then
+
+figlet "Creat wordlist"
+echo ""
+echo -e $green "what is the first: char or number ? ex: 12 "
+echo -e $red
+read user
+echo ""
+echo -e $green " second:  insert  any number .. ex: 123456 "
+echo -e $red
+read phone
+echo ""
+echo -e $green "name list ex :pass.txt "
+echo -e $red
+read namelist
+echo ""
+echo -e $green " sum little first  + second = ? example : mohammed773532224 = first = 8 second =9 then 8+9=17 "
+echo -e $red
+read much
+echo ""
+echo -e $green "please insert path save ex:/sdcard/"
+echo -e $red
+read pathsave
+echo ""
+echo -e $green "insert your pass hack ex:first@@@@@"
+echo -e $red
+read num
+echo ""
+toilet "Loading"
+crunch $much $much $phone -t $num -o $pathsave$namelist
+bash Tools-Hk.sh
+
+fi
+if [ $start = 00 ]
+then
+clear
+bash Tools-Hk.sh
+fi
+fi
+
 if [ $usage = 00 ]
 then
 clear
@@ -4789,13 +4939,6 @@ echo -e $yellow "By =====> $red HACKER / MOHAMMED "
 echo ''
 echo -e $red   "Start Encrypt The Tools"
 echo ""
-echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo ""
-echo -e $green "insert path and name Your name tool "
-echo ""
-echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-
-read nametool
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
 echo -e $green "insert path and name Your tool ex: Desktop/Tools-Hk/Tools-Hk.sh"
@@ -4810,7 +4953,7 @@ echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
 read tompath
-bash-obfuscate $frompath/$namtool -o $topath/$nametool
+bash-obfuscate $frompath -o $topath
 bash Tools-Hk.sh
 fi
 if [ $encrypt = 2 ]
