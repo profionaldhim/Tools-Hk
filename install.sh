@@ -7,7 +7,7 @@ pkg install figlet -y
 pkg install ruby -y
 pkg install gem -y
 pkg install toilet -y
-pkg install lolcat -y
+gem install lolcat
 pip2 install requests
 pkg install python -y
 pkg install python2 -y
@@ -20,6 +20,6 @@ apt install lolcat -y
 apt install figlet -y
 apt install python -y
 apt install python2 -y
-
+npm install -g bash-obfuscate
 chmod +x Tools-Hk.sh
 
