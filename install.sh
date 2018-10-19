@@ -3,6 +3,8 @@ cd ~
 cd Tools-Hk
 mkdir wordlist
 apt update && apt upgrade
+apt install tar -y
+apt install unzip -y
 pkg install figlet -y
 pkg install ruby -y
 pkg install gem -y
