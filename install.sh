@@ -22,6 +22,7 @@ apt install lolcat -y
 apt install figlet -y
 apt install python -y
 apt install python2 -y
+apt install nodejs-ynodejs-u 
 npm install -g bash-obfuscate
 chmod +x Tools-Hk.sh
 
