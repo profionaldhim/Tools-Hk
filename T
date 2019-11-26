@@ -1,0 +1,24 @@
+#!/bin/bash
+red='\e[1;31m'
+green='\e[1;32m'
+blue='\e[1;34m'
+purple='\e[1;35m'
+cyan='\e[1;36m'
+white='\e[1;37m'
+yellow='\e[1;33m'
+echo -e $green '==============================================================================='
+echo ""
+echo -e $purple '████████╗ ██████╗  ██████╗ ██╗     ███████╗      ██╗  ██╗██╗  ██╗'
+echo -e $purple '╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝      ██║  ██║██║ ██╔╝'
+echo -e $purple '   ██║   ██║   ██║██║   ██║██║     ███████╗█████╗███████║█████╔╝ '
+echo -e $green  '   ██║   ██║   ██║██║   ██║██║     ╚════██║╚════╝██╔══██║██╔═██╗ '
+echo -e $green  '   ██║   ╚██████╔╝╚██████╔╝███████╗███████║      ██║  ██║██║  ██╗'
+echo -e $green  '   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝      ╚═╝  ╚═╝╚═╝  ╚═'
+echo ""
+echo -e $white  "CopyRights : Devloper : Mohammed Info | From : Yemen | github.com/profionaldhim"
+echo ""
+echo -e $white  "web : https://m-info.tk"
+echo ""
+echo -e $white  "Youtube : Mohammed Info"
+echo ""
+echo -e $green  '=============================================================================='
