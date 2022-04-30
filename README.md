@@ -7,7 +7,10 @@ I added some tools
 and fixed some errors 
 and I added New style *_*
 
- هذه الاداة تشمل معظم الادوات المهمة على gnuroot &amp; Termux & kali linux
+ هذه الاداة تشمل معظم الادوات المهمة على
+ ![tools-hk](https://user-images.githubusercontent.com/35074237/166089689-eeffc37f-c76f-43f0-bee2-88f9ce993661.png)
+ 
+ gnuroot &amp; Termux & kali linux
  first :
  
  chmod +x install.sh
