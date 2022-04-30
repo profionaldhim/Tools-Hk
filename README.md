@@ -7,14 +7,16 @@ I added some tools
 and fixed some errors 
 and I added New style *_*
 
- هذه الاداة تشمل معظم الادوات المهمةبتطبيقي gnuroot &amp; Termux & kali linux
- first
+ هذه الاداة تشمل معظم الادوات المهمة على gnuroot &amp; Termux & kali linux
+ first :
+ 
  chmod +x install.sh
  chmod +x Tools-Hk.sh
- second
+ 
+ second :
  bash install.sh
  bash Tools-H.sh
 
-Copy®ight by Mohammed Info محمد إتفو
+Copy®ight by Mohammed Al-Shameri
 from : Yemen 
-thanx my friends 
+ 
