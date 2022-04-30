@@ -8,9 +8,12 @@ and fixed some errors
 and I added New style *_*
 
  هذه الاداة تشمل معظم الادوات المهمة على
- ![tools-hk](https://user-images.githubusercontent.com/35074237/166089689-eeffc37f-c76f-43f0-bee2-88f9ce993661.png)
- 
+![tools-hk](https://user-images.githubusercontent.com/35074237/166089845-bddcfec3-2b3e-40cd-a675-76a2bfc00b80.png)
+
+ ![tools-hk2](https://user-images.githubusercontent.com/35074237/166089860-d8f6e1cb-6f42-43a1-955a-9437d1c80e88.png)
+
  gnuroot &amp; Termux & kali linux
+ 
  first :
  
  chmod +x install.sh
